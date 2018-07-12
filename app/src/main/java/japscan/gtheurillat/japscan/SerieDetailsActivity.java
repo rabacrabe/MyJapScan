@@ -3,13 +3,15 @@ package japscan.gtheurillat.japscan;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -17,34 +19,44 @@ import java.util.HashMap;
 import java.util.List;
 
 import japscan.gtheurillat.adapter.NouveautesExpandableListAdapter;
+import japscan.gtheurillat.adapter.SerieDetailsExpandableListAdapter;
 import japscan.gtheurillat.model.Chapitre;
 import japscan.gtheurillat.model.Nouveaute;
 import japscan.gtheurillat.model.Serie;
+import japscan.gtheurillat.model.Tome;
 import japscan.gtheurillat.util.JapScanProxy;
 
-import android.os.AsyncTask;
 
-
-public class MainActivity extends AppCompatActivity {
+public class SerieDetailsActivity extends AppCompatActivity {
 
     ExpandableListView expandableListView;
     ExpandableListAdapter expandableListAdapter;
-    List<Serie> expandableListTitle;
-    HashMap<Serie, List<Chapitre>> expandableListDetail;
+    List<Tome> expandableListTitle;
+    HashMap<Tome, List<Chapitre>> expandableListDetail;
     ProgressDialog mProgressDialog;
     Context mainContext;
+    String title;
+    String url;
+    Serie serie;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_seriedetails);
 
         //setTitle("Nouveautés");
 
         mainContext = this;
 
+        title = getIntent().getStringExtra("SERIE_TITLE");
+        url = getIntent().getStringExtra("SERIE_URL");
+
+        TextView titleTextView = (TextView)findViewById(R.id.textMainTitle);
+        titleTextView.setText(title);
+
         expandableListView = (ExpandableListView) findViewById(R.id.lst_dernieres_sorties);
-        new Nouveautes().execute();
+        new SerieDetails().execute();
 
 
 
@@ -87,14 +99,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Title AsyncTask
-    private class Nouveautes extends AsyncTask<Void, Void, Void> {
+    private class SerieDetails extends AsyncTask<Void, Void, Void> {
         String title;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mProgressDialog = new ProgressDialog(MainActivity.this);
-            mProgressDialog.setTitle("Dernières Sorties");
+            mProgressDialog = new ProgressDialog(SerieDetailsActivity.this);
+            mProgressDialog.setTitle(this.title);
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.setIndeterminate(false);
             mProgressDialog.show();
@@ -103,27 +115,16 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-
-
-
                 JapScanProxy proxy = new JapScanProxy();
-                ArrayList<Nouveaute> lstNouveautes = proxy.getNouveautes();
+                serie = proxy.getSerieDetails(title, url);
 
 
-                expandableListDetail = new HashMap<Serie, List<Chapitre>>();
-                for (Nouveaute nouveaute : lstNouveautes) {
-                    //expandableListDetail.put(new Serie(nouveaute.getDate(), null), new ArrayList<Chapitre>());
+                expandableListDetail = new HashMap<Tome, List<Chapitre>>();
 
-                    for (Serie serie : nouveaute.getLstSeries()) {
-                        List<Chapitre> lst_chapitres = new ArrayList<Chapitre>();
-
-                        for (Chapitre chapitre : serie.getLstChapitres()) {
-                            lst_chapitres.add(chapitre);
-                        }
-
-                        expandableListDetail.put(serie, lst_chapitres);
-                    }
+                for (Tome tome : serie.getLstTomes()) {
+                    expandableListDetail.put(tome, tome.getLstChapitres());
                 }
+
 
 
             } catch (Exception e) {
@@ -138,8 +139,27 @@ public class MainActivity extends AppCompatActivity {
             //TextView txttitle = (TextView) findViewById(R.id.titletxt);
             //txttitle.setText(title);
 
-            expandableListTitle = new ArrayList<Serie>(expandableListDetail.keySet());
-            expandableListAdapter = new NouveautesExpandableListAdapter(mainContext, expandableListTitle, expandableListDetail);
+
+            TextView auteurTextView = (TextView)findViewById(R.id.textDetailAuteur);
+            auteurTextView.setText(serie.getAuteur());
+
+            TextView dateTextView = (TextView)findViewById(R.id.textDetailDate);
+            dateTextView.setText(serie.getDate_sortie());
+
+            TextView genreTextView = (TextView)findViewById(R.id.textDetailGenre);
+            genreTextView.setText(serie.getGenre());
+
+            TextView fansubTextView = (TextView)findViewById(R.id.textDetailFansub);
+            fansubTextView.setText(serie.getFansub());
+
+            TextView statusTextView = (TextView)findViewById(R.id.textDetailStatus);
+            statusTextView.setText(serie.getStatus());
+
+            TextView synopsisTextView = (TextView)findViewById(R.id.textDetailSynopsis);
+            synopsisTextView.setText(serie.getSynopsis());
+
+            expandableListTitle = new ArrayList<Tome>(expandableListDetail.keySet());
+            expandableListAdapter = new SerieDetailsExpandableListAdapter(mainContext, expandableListTitle, expandableListDetail);
             expandableListView.setAdapter(expandableListAdapter);
 
             mProgressDialog.dismiss();
@@ -156,13 +176,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_home:
-                // Comportement du bouton "A Propos"
-                return true;
+                Intent intent_main = new Intent(SerieDetailsActivity.this, MainActivity.class);
+                startActivity(intent_main);
             case R.id.menu_tops:
-                Intent intent_tops = new Intent(MainActivity.this, TopsActivity.class);
+                Intent intent_tops = new Intent(SerieDetailsActivity.this, TopsActivity.class);
                 startActivity(intent_tops);
             case R.id.menu_list_mangas:
-                Intent intent_mangas = new Intent(MainActivity.this, MangasActivity.class);
+                Intent intent_mangas = new Intent(SerieDetailsActivity.this, MangasActivity.class);
                 startActivity(intent_mangas);
             case R.id.menu_favoris:
                 // Comportement du bouton "Recherche"

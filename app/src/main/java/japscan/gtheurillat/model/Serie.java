@@ -10,15 +10,83 @@ public class Serie {
 
     private String title;
     private ArrayList<Chapitre> lstChapitres;
+    private ArrayList<Tome> lstTomes;
     private String url;
     private boolean hot;
     private String number;
+    private String auteur;
+    private String date_sortie;
+    private String genre;
+    private String fansub;
+    private String status;
+    private String synopsis;
 
     public Serie(String title, String url) {
         this.title = title;
         this.url = url;
 
         lstChapitres = new ArrayList<Chapitre>();
+        lstTomes = new ArrayList<Tome>();
+    }
+
+    public ArrayList<Tome> getLstTomes() {
+        return lstTomes;
+    }
+
+    public void setLstTomes(ArrayList<Tome> lstTomes) {
+        this.lstTomes = lstTomes;
+    }
+
+    public void addTome(Tome tome) {
+        this.lstTomes.add(tome);
+    }
+
+    public String getAuteur() {
+        return auteur;
+    }
+
+    public void setAuteur(String auteur) {
+        this.auteur = auteur;
+    }
+
+    public String getDate_sortie() {
+        return date_sortie;
+    }
+
+    public void setDate_sortie(String date_sortie) {
+        this.date_sortie = date_sortie;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public String getFansub() {
+        return fansub;
+    }
+
+    public void setFansub(String fansub) {
+        this.fansub = fansub;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getSynopsis() {
+        return synopsis;
+    }
+
+    public void setSynopsis(String synopsis) {
+        this.synopsis = synopsis;
     }
 
     public String getUrl() {

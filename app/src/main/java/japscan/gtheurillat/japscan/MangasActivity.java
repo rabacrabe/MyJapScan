@@ -10,27 +10,23 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import japscan.gtheurillat.adapter.NouveautesExpandableListAdapter;
-import japscan.gtheurillat.adapter.TopsListAdapter;
-import japscan.gtheurillat.model.Chapitre;
-import japscan.gtheurillat.model.Nouveaute;
+import japscan.gtheurillat.adapter.CatalogueListAdapter;
 import japscan.gtheurillat.model.Serie;
 import japscan.gtheurillat.util.JapScanProxy;
+import japscan.gtheurillat.widget.IndexableListView;
 
 
-public class TopsActivity extends AppCompatActivity {
+public class MangasActivity extends AppCompatActivity {
 
-    ListView listView;
+    //ListView listView;
+    IndexableListView listView;
+
     ListAdapter listAdapter;
     List<Serie> listTitle;
     List<Serie> listDetail;
@@ -40,14 +36,19 @@ public class TopsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tops);
+        setContentView(R.layout.activity_mangas);
 
         //setTitle("Nouveautés");
 
-        listView = (ListView) findViewById(R.id.lst_tops_semaine);
+
         mainContext = this;
 
-        new Tops().execute();
+        //listView = (ListView) findViewById(R.id.lst_mangas);
+        listView = (IndexableListView) findViewById(R.id.lst_mangas);
+        listView.setFastScrollEnabled(true);
+
+        new Catalogue().execute();
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -59,7 +60,7 @@ public class TopsActivity extends AppCompatActivity {
                                 + " -> "
                                 + listDetail.get(position).getUrl(), Toast.LENGTH_SHORT
                 ).show();
-                Intent intent_seriedetail = new Intent(TopsActivity.this, SerieDetailsActivity.class);
+                Intent intent_seriedetail = new Intent(MangasActivity.this, SerieDetailsActivity.class);
                 intent_seriedetail.putExtra("SERIE_TITLE", listDetail.get(position).getTitle());
                 intent_seriedetail.putExtra("SERIE_URL", listDetail.get(position).getUrl());
                 startActivity(intent_seriedetail);
@@ -69,14 +70,14 @@ public class TopsActivity extends AppCompatActivity {
     }
 
     // Title AsyncTask
-    private class Tops extends AsyncTask<Void, Void, Void> {
+    private class Catalogue extends AsyncTask<Void, Void, Void> {
         String title;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mProgressDialog = new ProgressDialog(TopsActivity.this);
-            mProgressDialog.setTitle("Tops de la semaine");
+            mProgressDialog = new ProgressDialog(MangasActivity.this);
+            mProgressDialog.setTitle("Toutes les BDs");
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.setIndeterminate(false);
             mProgressDialog.show();
@@ -86,7 +87,7 @@ public class TopsActivity extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
             try {
                 JapScanProxy proxy = new JapScanProxy();
-                listDetail = proxy.getTops();
+                listDetail = proxy.getCatalogue();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -100,8 +101,10 @@ public class TopsActivity extends AppCompatActivity {
             //txttitle.setText(title);
 
 
-            listAdapter = new TopsListAdapter(mainContext, listDetail);
+            listAdapter = new CatalogueListAdapter(mainContext, android.R.layout.simple_list_item_1, listDetail);
+
             listView.setAdapter(listAdapter);
+
 
             mProgressDialog.dismiss();
         }
@@ -117,13 +120,14 @@ public class TopsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_home:
-                Intent intent_main = new Intent(TopsActivity.this, MainActivity.class);
+                Intent intent_main = new Intent(MangasActivity.this, MainActivity.class);
                 startActivity(intent_main);
             case R.id.menu_tops:
-                return true;
+                Intent intent_top = new Intent(MangasActivity.this, TopsActivity.class);
+                startActivity(intent_top);
             case R.id.menu_list_mangas:
-                Intent intent_mangas = new Intent(TopsActivity.this, MangasActivity.class);
-                startActivity(intent_mangas);
+                // Comportement du bouton "Rafraichir"
+                return true;
             case R.id.menu_favoris:
                 // Comportement du bouton "Recherche"
                 return true;
