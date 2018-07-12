@@ -1,17 +1,23 @@
 package japscan.gtheurillat.japscan;
 
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -26,12 +32,12 @@ public class MangasActivity extends AppCompatActivity {
 
     //ListView listView;
     IndexableListView listView;
-
-    ListAdapter listAdapter;
+    CatalogueListAdapter listAdapter;
     List<Serie> listTitle;
     List<Serie> listDetail;
     ProgressDialog mProgressDialog;
     Context mainContext;
+    SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +53,17 @@ public class MangasActivity extends AppCompatActivity {
         listView = (IndexableListView) findViewById(R.id.lst_mangas);
         listView.setFastScrollEnabled(true);
 
+        searchView = (SearchView)findViewById(R.id.recherche_manga);
+
+
         new Catalogue().execute();
+
+        // Get the intent, verify the action and get the query
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            //doMySearch(query);
+        }
 
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -64,6 +80,24 @@ public class MangasActivity extends AppCompatActivity {
                 intent_seriedetail.putExtra("SERIE_TITLE", listDetail.get(position).getTitle());
                 intent_seriedetail.putExtra("SERIE_URL", listDetail.get(position).getUrl());
                 startActivity(intent_seriedetail);
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String arg0) {
+                // TODO Auto-generated method stub
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                // TODO Auto-generated method stub
+
+                listAdapter.getFilter().filter(query);
+
+                return false;
             }
         });
 
@@ -108,7 +142,12 @@ public class MangasActivity extends AppCompatActivity {
 
             mProgressDialog.dismiss();
         }
+
     }
+
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

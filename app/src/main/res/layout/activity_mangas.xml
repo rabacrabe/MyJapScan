@@ -28,6 +28,31 @@
         android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft" >
          </ListView>
 -->
+    <!--
+    <EditText
+        android:id="@+id/recherche_manga"
+        style="@style/Widget.AppCompat.AutoCompleteTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="Recherche..."
+        android:textColor="#005c9c" />
+-->
+
+    <SearchView
+        android:id="@+id/recherche_manga"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/lst_mangas"
+        android:layout_marginLeft="14dp"
+        android:queryHint="Recherche.." >
+
+    </SearchView>
+
+
     <japscan.gtheurillat.widget.IndexableListView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

@@ -29,6 +29,16 @@ public class Serie {
         lstTomes = new ArrayList<Tome>();
     }
 
+    public Serie(String title, String url, String genre, String status) {
+        this.title = title;
+        this.url = url;
+        this.genre = genre;
+        this.status = status;
+
+        lstChapitres = new ArrayList<Chapitre>();
+        lstTomes = new ArrayList<Tome>();
+    }
+
     public ArrayList<Tome> getLstTomes() {
         return lstTomes;
     }

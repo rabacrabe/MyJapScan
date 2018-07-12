@@ -20,6 +20,7 @@
         <activity android:name=".TopsActivity" >
         </activity>
         <activity android:name=".MangasActivity" >
+
         </activity>
         <activity android:name=".SerieDetailsActivity" >
         </activity>
