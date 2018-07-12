@@ -69,16 +69,17 @@ public class MangasActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Object listItem = listDetail.get(position);
+                //Object listItem = listDetail.get(position);
+                Object listItem = listAdapter.getItem(position);
                 Toast.makeText(
                         getApplicationContext(),
-                        listDetail.get(position)
+                        listAdapter.getItem(position)
                                 + " -> "
-                                + listDetail.get(position).getUrl(), Toast.LENGTH_SHORT
+                                + listAdapter.getItem(position).getUrl(), Toast.LENGTH_SHORT
                 ).show();
                 Intent intent_seriedetail = new Intent(MangasActivity.this, SerieDetailsActivity.class);
-                intent_seriedetail.putExtra("SERIE_TITLE", listDetail.get(position).getTitle());
-                intent_seriedetail.putExtra("SERIE_URL", listDetail.get(position).getUrl());
+                intent_seriedetail.putExtra("SERIE_TITLE", listAdapter.getItem(position).getTitle());
+                intent_seriedetail.putExtra("SERIE_URL", listAdapter.getItem(position).getUrl());
                 startActivity(intent_seriedetail);
             }
         });
