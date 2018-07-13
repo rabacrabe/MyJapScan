@@ -13,6 +13,9 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -133,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 expandableListDetail = new HashMap<Serie, List<Chapitre>>();
+                expandableListTitle = new ArrayList<Serie>();
                 for (Nouveaute nouveaute : lstNouveautes) {
                     //expandableListDetail.put(new Serie(nouveaute.getDate(), null), new ArrayList<Chapitre>());
 
@@ -144,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         expandableListDetail.put(serie, lst_chapitres);
+                        expandableListTitle.add(serie);
                     }
                 }
 
@@ -160,7 +165,8 @@ public class MainActivity extends AppCompatActivity {
             //TextView txttitle = (TextView) findViewById(R.id.titletxt);
             //txttitle.setText(title);
 
-            expandableListTitle = new ArrayList<Serie>(expandableListDetail.keySet());
+            //expandableListTitle = new ArrayList<Serie>(expandableListDetail.keySet());
+
             expandableListAdapter = new NouveautesExpandableListAdapter(mainContext, expandableListTitle, expandableListDetail);
             expandableListView.setAdapter(expandableListAdapter);
 

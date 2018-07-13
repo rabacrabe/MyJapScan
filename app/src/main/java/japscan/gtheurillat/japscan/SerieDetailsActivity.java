@@ -132,9 +132,10 @@ public class SerieDetailsActivity extends AppCompatActivity {
 
 
                 expandableListDetail = new HashMap<Tome, List<Chapitre>>();
-
+                expandableListTitle = new ArrayList<Tome>();
                 for (Tome tome : serie.getLstTomes()) {
                     expandableListDetail.put(tome, tome.getLstChapitres());
+                    expandableListTitle.add(tome);
                 }
 
 
@@ -170,7 +171,7 @@ public class SerieDetailsActivity extends AppCompatActivity {
             TextView synopsisTextView = (TextView)findViewById(R.id.textDetailSynopsis);
             synopsisTextView.setText(serie.getSynopsis());
 
-            expandableListTitle = new ArrayList<Tome>(expandableListDetail.keySet());
+            //expandableListTitle = new ArrayList<Tome>(expandableListDetail.keySet());
             expandableListAdapter = new SerieDetailsExpandableListAdapter(mainContext, expandableListTitle, expandableListDetail);
             expandableListView.setAdapter(expandableListAdapter);
 
