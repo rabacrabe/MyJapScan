@@ -18,10 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import japscan.gtheurillat.adapter.NouveautesExpandableListAdapter;
 import japscan.gtheurillat.adapter.SerieDetailsExpandableListAdapter;
 import japscan.gtheurillat.model.Chapitre;
-import japscan.gtheurillat.model.Nouveaute;
 import japscan.gtheurillat.model.Serie;
 import japscan.gtheurillat.model.Tome;
 import japscan.gtheurillat.util.JapScanProxy;
@@ -85,6 +83,12 @@ public class SerieDetailsActivity extends AppCompatActivity {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
+                String chapitre_title = expandableListDetail.get(
+                                                    expandableListTitle.get(groupPosition)).get(
+                                                    childPosition).getTitle();
+                String chapitre_url = expandableListDetail.get(
+                                                    expandableListTitle.get(groupPosition)).get(
+                                                    childPosition).getUrl();
                 Toast.makeText(
                         getApplicationContext(),
                         expandableListTitle.get(groupPosition)
@@ -93,7 +97,15 @@ public class SerieDetailsActivity extends AppCompatActivity {
                                 expandableListTitle.get(groupPosition)).get(
                                 childPosition).getUrl(), Toast.LENGTH_SHORT
                 ).show();
-                return false;
+
+                Intent intent_lecteur = new Intent(SerieDetailsActivity.this, LecteurActivity.class);
+                intent_lecteur.putExtra("SERIE_TITLE", title);
+                intent_lecteur.putExtra("SERIE_URL", url);
+                intent_lecteur.putExtra("CHAPITRE_TITLE", chapitre_title);
+                intent_lecteur.putExtra("CHAPITRE_URL", chapitre_url);
+                startActivity(intent_lecteur);
+
+                return true;
             }
         });
     }

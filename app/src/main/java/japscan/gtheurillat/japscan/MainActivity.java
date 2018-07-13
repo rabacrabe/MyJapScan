@@ -24,6 +24,8 @@ import japscan.gtheurillat.util.JapScanProxy;
 
 import android.os.AsyncTask;
 
+import com.squareup.picasso.Picasso;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     HashMap<Serie, List<Chapitre>> expandableListDetail;
     ProgressDialog mProgressDialog;
     Context mainContext;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +76,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
+                String chapitre_title = expandableListDetail.get(
+                        expandableListTitle.get(groupPosition)).get(
+                        childPosition).getTitle();
+                String chapitre_url = expandableListDetail.get(
+                        expandableListTitle.get(groupPosition)).get(
+                        childPosition).getUrl();
+
+
                 Toast.makeText(
                         getApplicationContext(),
                         expandableListTitle.get(groupPosition)
@@ -81,6 +92,17 @@ public class MainActivity extends AppCompatActivity {
                                 expandableListTitle.get(groupPosition)).get(
                                 childPosition).getUrl(), Toast.LENGTH_SHORT
                 ).show();
+
+
+
+
+                Intent intent_lecteur = new Intent(MainActivity.this, LecteurActivity.class);
+                intent_lecteur.putExtra("SERIE_TITLE", "");
+                intent_lecteur.putExtra("SERIE_URL", "");
+                intent_lecteur.putExtra("CHAPITRE_TITLE", chapitre_title);
+                intent_lecteur.putExtra("CHAPITRE_URL", chapitre_url);
+                startActivity(intent_lecteur);
+
                 return false;
             }
         });
