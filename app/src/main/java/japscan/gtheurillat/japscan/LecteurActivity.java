@@ -73,6 +73,15 @@ public class LecteurActivity extends AppCompatActivity
         titrePage = (TextView) findViewById(R.id.lecteur_titre);
         lecteurTitreChapitre = (TextView) headerView.findViewById(R.id.lecteur_menu_titre_chapitre);
         lecteurTitreSerie = (TextView) headerView.findViewById(R.id.lecteur_menu_titre_serie);
+        lecteurTitreSerie.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                Intent intent_seriedetail = new Intent(LecteurActivity.this, SerieDetailsActivity.class);
+                intent_seriedetail.putExtra("SERIE_TITLE", serie.getTitle());
+                intent_seriedetail.putExtra("SERIE_URL", serie.getUrl());
+                startActivity(intent_seriedetail);
+            }
+        });
         lecteurPagination = (TextView) headerView.findViewById(R.id.lecteur_menu_pagination);
         img = (ImageView)findViewById(R.id.lecteur_image);
 
@@ -161,10 +170,10 @@ public class LecteurActivity extends AppCompatActivity
            this.goToPreviousPage();
 
         } else if (id == R.id.lecteur_nav_chapitre_suivant) {
-           this.GoToNextChapter();
+           this.goToNextChapter();
 
         } else if (id == R.id.lecteur_nav_chapitre_precedent) {
-            this.GoToPreviousChapter();
+            this.goToPreviousChapter();
 
         } else if (id == R.id.nav_share) {
 
@@ -178,51 +187,81 @@ public class LecteurActivity extends AppCompatActivity
     }
 
     public void goToNextPage() {
-        Page nexPage = currentChapitre.getLstPage().get(currentImageindex+1);
+        if (currentImageindex+1 == currentChapitre.getLstPage().size()) {
+            this.goToNextChapter();
+        }
+        else {
+            Page nexPage = currentChapitre.getLstPage().get(currentImageindex + 1);
 
-        Toast.makeText(
-                getApplicationContext(),
-                "Next page -> " + nexPage.getUrl(), Toast.LENGTH_SHORT
-        ).show();
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Next page -> " + nexPage.getUrl(), Toast.LENGTH_SHORT
+            ).show();
 
-        chapitreUrl=nexPage.getUrl();
-        new Lecteur().execute();
+            chapitreUrl = nexPage.getUrl();
+            new Lecteur().execute();
+        }
     }
 
     public void goToPreviousPage() {
-        Page precPage = currentChapitre.getLstPage().get(currentImageindex-1);
+        if (currentImageindex == 0) {
+            this.goToPreviousChapter();
+        }
+        else {
+            Page precPage = currentChapitre.getLstPage().get(currentImageindex - 1);
+
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Precedent page -> " + precPage.getTitle(), Toast.LENGTH_SHORT
+            ).show();
+
+            chapitreUrl = precPage.getUrl();
+            new Lecteur().execute();
+        }
+    }
+
+    public void goToNextChapter() {
+
+        Chapitre nextChapitre = serie.getLstChapitres().get(2);
 
         Toast.makeText(
                 getApplicationContext(),
-                "Precedent page -> " + precPage.getTitle(), Toast.LENGTH_SHORT
+                "Next Chapitre -> " + nextChapitre.getTitle(), Toast.LENGTH_SHORT
         ).show();
 
-        chapitreUrl=precPage.getUrl();
+        lecteurTitreChapitre.setText(nextChapitre.getTitle());
+        chapitreTitle  = nextChapitre.getTitle();
+        titrePage.setText(chapitreTitle);
+        chapitreUrl  = nextChapitre.getUrl();
+
+        chapitreUrl=nextChapitre.getUrl();
         new Lecteur().execute();
     }
 
-    public void GoToNextChapter() {
+    public void goToPreviousChapter() {
         Chapitre precChapitre = serie.getLstChapitres().get(0);
 
-        Toast.makeText(
-                getApplicationContext(),
-                "Next Chapitre -> " + precChapitre.getTitle(), Toast.LENGTH_SHORT
-        ).show();
+        if (precChapitre == null) {
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Pas de chapitre precedent", Toast.LENGTH_SHORT
+            ).show();
 
-        chapitreUrl=precChapitre.getUrl();
-        new Lecteur().execute();
-    }
+        }
+        else {
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Precedent Chapitre -> " + precChapitre.getTitle(), Toast.LENGTH_SHORT
+            ).show();
 
-    public void GoToPreviousChapter() {
-        Chapitre precChapitre = serie.getLstChapitres().get(2);
+            lecteurTitreChapitre.setText(precChapitre.getTitle());
+            chapitreTitle  = precChapitre.getTitle();
+            titrePage.setText(chapitreTitle);
+            chapitreUrl  = precChapitre.getUrl();
 
-        Toast.makeText(
-                getApplicationContext(),
-                "Precedent Chapitre -> " + precChapitre.getTitle(), Toast.LENGTH_SHORT
-        ).show();
-
-        chapitreUrl=precChapitre.getUrl();
-        new Lecteur().execute();
+            chapitreUrl = precChapitre.getUrl();
+            new Lecteur().execute();
+        }
     }
 
     // Title AsyncTask
@@ -279,7 +318,7 @@ public class LecteurActivity extends AppCompatActivity
                         ).show();
 
                         titrePage.setText(chapitreTitle + " : " + String.valueOf(idx + 1) + " / " + String.valueOf(currentChapitre.getLstPage().size()));
-                        lecteurPagination.setText(String.valueOf(idx + 1) + " / " + String.valueOf(currentChapitre.getLstPage().size()));
+                        lecteurPagination.setText("Page " + String.valueOf(idx + 1) + " / " + String.valueOf(currentChapitre.getLstPage().size()));
                         break;
                     }
                     idx += 1;

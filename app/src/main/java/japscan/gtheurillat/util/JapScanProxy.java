@@ -261,11 +261,16 @@ public class JapScanProxy {
             Element img_node = doc.select("img#image").first();
 
             Element prec_chapter_node = doc.select("a#back_chapter").first();
-            Chapitre precChapitre = new Chapitre(prec_chapter_node.text(), this.urlRoot + prec_chapter_node.attr("href"));
+            Chapitre precChapitre = null;
+            if (prec_chapter_node != null) {
+                precChapitre = new Chapitre(prec_chapter_node.text(), this.urlRoot + prec_chapter_node.attr("href"));
+            }
 
             Element next_chapter_node = doc.select("a#next_chapter").first();
-            Chapitre nextChapitre = new Chapitre(next_chapter_node.text(), this.urlRoot + next_chapter_node.attr("href"));
-
+            Chapitre nextChapitre = null;
+            if (next_chapter_node != null) {
+                nextChapitre = new Chapitre(next_chapter_node.text(), this.urlRoot + next_chapter_node.attr("href"));
+            }
 
             Element pages_node = doc.select("select#pages").first();
 
@@ -302,10 +307,16 @@ public class JapScanProxy {
             serie.setFansub(manga_detail_team.text());
             serie.setDate_sortie(manga_detail_date.text());
 
-            serie.addChapitre(chapitre);
             */
-
             serie = new Serie("TEST", "");
+            Element serie_name_node = doc.select("tbody > tr > td > a").first();
+            if (serie_name_node != null) {
+                serie.setTitle(serie_name_node.text());
+                serie.setUrl(this.urlRoot + serie_name_node.attr("href") );
+
+
+            }
+
             serie.addChapitre(precChapitre);
             serie.addChapitre(chapitre);
             serie.addChapitre(nextChapitre);
