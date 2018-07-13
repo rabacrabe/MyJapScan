@@ -260,6 +260,12 @@ public class JapScanProxy {
 
             Element img_node = doc.select("img#image").first();
 
+            Element prec_chapter_node = doc.select("a#back_chapter").first();
+            Chapitre precChapitre = new Chapitre(prec_chapter_node.text(), this.urlRoot + prec_chapter_node.attr("href"));
+
+            Element next_chapter_node = doc.select("a#next_chapter").first();
+            Chapitre nextChapitre = new Chapitre(next_chapter_node.text(), this.urlRoot + next_chapter_node.attr("href"));
+
 
             Element pages_node = doc.select("select#pages").first();
 
@@ -300,7 +306,9 @@ public class JapScanProxy {
             */
 
             serie = new Serie("TEST", "");
+            serie.addChapitre(precChapitre);
             serie.addChapitre(chapitre);
+            serie.addChapitre(nextChapitre);
 
         }  catch (IOException e) {
             e.printStackTrace();

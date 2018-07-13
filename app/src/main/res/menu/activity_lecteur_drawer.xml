@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/lecteur_nav_page_suivant"
+            android:icon="@android:drawable/ic_media_ff"
+            android:title="Page Suivante" />
+        <item
+            android:id="@+id/lecteur_nav_page_precedent"
+            android:icon="@android:drawable/ic_media_rew"
+            android:title="Page Precedente" />
+        <item
+            android:id="@+id/lecteur_nav_chapitre_suivant"
+            android:icon="@android:drawable/ic_media_next"
+            android:title="Chapitre Suivant" />
+        <item
+            android:id="@+id/lecteur_nav_chapitre_precedent"
+            android:icon="@android:drawable/ic_media_previous"
+            android:title="Chapitre Precedent" />
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Send" />
+        </menu>
+    </item>
+
+</menu>
