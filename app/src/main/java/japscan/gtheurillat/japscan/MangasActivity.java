@@ -162,11 +162,12 @@ public class MangasActivity extends AppCompatActivity {
             case R.id.menu_home:
                 Intent intent_main = new Intent(MangasActivity.this, MainActivity.class);
                 startActivity(intent_main);
+                return true;
             case R.id.menu_tops:
                 Intent intent_top = new Intent(MangasActivity.this, TopsActivity.class);
                 startActivity(intent_top);
+                return true;
             case R.id.menu_list_mangas:
-                // Comportement du bouton "Rafraichir"
                 return true;
             case R.id.menu_favoris:
                 // Comportement du bouton "Recherche"

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import japscan.gtheurillat.model.Chapitre;
@@ -292,7 +293,8 @@ public class JapScanProxy {
                 chapitre.addPage(newPage);
             }
 
-            /*
+
+             /*
 
             Elements details_serie_node = doc.select("tbody > tr");
 
@@ -317,9 +319,33 @@ public class JapScanProxy {
 
             }
 
+
+/*
+            ArrayList<Chapitre> tmpLstChapitre = new ArrayList<Chapitre>();
+
+            Element chapitres_node = doc.select("select#chapitres").first();
+
+            while(chapitres_node.children().size() == 0) {
+
+            }
+
+            for (Element chapitreItem : chapitres_node.children()) {
+                Log.e("PAGE", chapitreItem.text() + " -> " + this.urlRoot + chapitreItem.attr("value"));
+                Chapitre newChapitre = new Chapitre(chapitreItem.text(), this.urlRoot + chapitreItem.attr("value"));
+                tmpLstChapitre.add(newChapitre);
+                serie.addChapitre(newChapitre);
+            }
+            //Collections.reverse(tmpLstChapitre);
+            //serie.setLstChapitres(tmpLstChapitre);
+            serie.setIdxCurrentChapitre(Integer.parseInt(chapitres_node.attr("data-uri"))-1);
+*/
+
+
             serie.addChapitre(precChapitre);
             serie.addChapitre(chapitre);
             serie.addChapitre(nextChapitre);
+
+            serie.setIdxCurrentChapitre(1);
 
         }  catch (IOException e) {
             e.printStackTrace();

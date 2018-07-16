@@ -20,6 +20,7 @@ public class Serie {
     private String fansub;
     private String status;
     private String synopsis;
+    private Integer idxCurrentChapitre;
 
     public Serie(String title, String url) {
         this.title = title;
@@ -142,5 +143,14 @@ public class Serie {
     public void setNumber(String number) {
         this.number = number;
     }
+
+    public Integer getIdxCurrentChapitre() {
+        return idxCurrentChapitre;
+    }
+
+    public void setIdxCurrentChapitre(Integer idxCurrentChapitre) {
+        this.idxCurrentChapitre = idxCurrentChapitre;
+    }
+
 
 }

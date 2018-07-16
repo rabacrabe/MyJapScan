@@ -38,12 +38,39 @@
         android:textStyle="bold"
         android:text="TITRE CHAPITRE" />
 
-    <TextView
-        android:id="@+id/lecteur_menu_pagination"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="12dp"
-        android:textStyle="italic"
-        android:text="pagination" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12dp"
+            android:textStyle="italic"
+            android:text="Page "
+            />
+
+
+        <Spinner
+            android:id="@+id/nav_pagination_lst"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:dropDownWidth="wrap_content"
+            android:spinnerMode="dropdown"
+            android:layout_weight="1"
+            android:textSize="12dp"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/nav_pagination_suffix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12dp"
+            android:textStyle="italic"
+            android:text=" / ???"
+            />
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -119,11 +119,13 @@ public class TopsActivity extends AppCompatActivity {
             case R.id.menu_home:
                 Intent intent_main = new Intent(TopsActivity.this, MainActivity.class);
                 startActivity(intent_main);
+                return true;
             case R.id.menu_tops:
                 return true;
             case R.id.menu_list_mangas:
                 Intent intent_mangas = new Intent(TopsActivity.this, MangasActivity.class);
                 startActivity(intent_mangas);
+                return true;
             case R.id.menu_favoris:
                 // Comportement du bouton "Recherche"
                 return true;

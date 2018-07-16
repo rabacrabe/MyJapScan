@@ -191,12 +191,15 @@ public class SerieDetailsActivity extends AppCompatActivity {
             case R.id.menu_home:
                 Intent intent_main = new Intent(SerieDetailsActivity.this, MainActivity.class);
                 startActivity(intent_main);
+                return true;
             case R.id.menu_tops:
                 Intent intent_tops = new Intent(SerieDetailsActivity.this, TopsActivity.class);
                 startActivity(intent_tops);
+                return true;
             case R.id.menu_list_mangas:
                 Intent intent_mangas = new Intent(SerieDetailsActivity.this, MangasActivity.class);
                 startActivity(intent_mangas);
+                return true;
             case R.id.menu_favoris:
                 // Comportement du bouton "Recherche"
                 return true;

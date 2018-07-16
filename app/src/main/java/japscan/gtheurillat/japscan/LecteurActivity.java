@@ -20,7 +20,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +31,8 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import japscan.gtheurillat.adapter.TopsListAdapter;
 import japscan.gtheurillat.model.Chapitre;
@@ -52,9 +57,13 @@ public class LecteurActivity extends AppCompatActivity
     Chapitre currentChapitre;
     TextView lecteurTitreChapitre;
     TextView lecteurTitreSerie;
-    TextView lecteurPagination;
     NavigationView navigationView;
+    Spinner navigationPagination;
+    TextView navigationPaginationSuffix;
+    ArrayAdapter<String> paginationAdapter;
+
     View headerView;
+    int check = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,12 +91,35 @@ public class LecteurActivity extends AppCompatActivity
                 startActivity(intent_seriedetail);
             }
         });
-        lecteurPagination = (TextView) headerView.findViewById(R.id.lecteur_menu_pagination);
+
+
+
         img = (ImageView)findViewById(R.id.lecteur_image);
+        navigationPagination = (Spinner)headerView.findViewById(R.id.nav_pagination_lst);
+        navigationPaginationSuffix = (TextView)headerView.findViewById(R.id.nav_pagination_suffix);
 
 
+        navigationPagination.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // your code here
+                if(++check > 1) {
+                    Chapitre currentChapitre = serie.getLstChapitres().get(1);
+                    Page selectedPage = currentChapitre.getLstPage().get(position);
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "Go to page -> " + selectedPage.getTitle() + " " + selectedPage.getUrl(), Toast.LENGTH_SHORT
+                    ).show();
+                    goToPage(selectedPage.getUrl());
+                }
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
 
+        });
 
         //serieTitle = getIntent().getStringExtra("SERIE_TITLE");
         //serieUrl = getIntent().getStringExtra("SERIE_URL");
@@ -186,6 +218,17 @@ public class LecteurActivity extends AppCompatActivity
         return true;
     }
 
+    public void goToPage(String pageUrl) {
+        Toast.makeText(
+                getApplicationContext(),
+                "Go page -> " + pageUrl, Toast.LENGTH_SHORT
+        ).show();
+
+        chapitreUrl = pageUrl;
+        new Lecteur().execute();
+
+    }
+
     public void goToNextPage() {
         if (currentImageindex+1 == currentChapitre.getLstPage().size()) {
             this.goToNextChapter();
@@ -271,6 +314,7 @@ public class LecteurActivity extends AppCompatActivity
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            check = 0;
             mProgressDialog = new ProgressDialog(LecteurActivity.this);
             mProgressDialog.setTitle(chapitreTitle);
             mProgressDialog.setMessage("Loading...");
@@ -299,11 +343,19 @@ public class LecteurActivity extends AppCompatActivity
             if (serie != null) {
                 lecteurTitreSerie.setText(serie.getTitle());
 
+                /*
                 //0 = precedent chapitre
                 //1 = current chapitre
                 //2 = next chapitre
                 currentChapitre = serie.getLstChapitres().get(1);
+                */
 
+                //Log.e("AFFICHAGE", "nb chapitre -> " + serie.getLstChapitres().size() + " ; current=" + serie.getIdxCurrentChapitre());
+
+                currentChapitre = serie.getLstChapitres().get(serie.getIdxCurrentChapitre());
+
+                ArrayList<String> paginationArray = new ArrayList<String>();
+                Integer idx_selected = 0;
                 Integer idx = 0;
                 for (Page page : currentChapitre.getLstPage()) {
                     if (page.isSelected() == true) {
@@ -312,17 +364,31 @@ public class LecteurActivity extends AppCompatActivity
                         currentImageindex = idx;
                         picasso.load(page.getImgUrl()).into(img);
 
+                        Integer nbpages = currentChapitre.getLstPage().size() - 1;
+
                         Toast.makeText(
                                 getApplicationContext(),
-                                "Page " + String.valueOf(idx + 1) + " / " + String.valueOf(currentChapitre.getLstPage().size()), Toast.LENGTH_SHORT
+                                "Page " + String.valueOf(idx + 1) + " / " + String.valueOf(nbpages), Toast.LENGTH_SHORT
                         ).show();
 
-                        titrePage.setText(chapitreTitle + " : " + String.valueOf(idx + 1) + " / " + String.valueOf(currentChapitre.getLstPage().size()));
-                        lecteurPagination.setText("Page " + String.valueOf(idx + 1) + " / " + String.valueOf(currentChapitre.getLstPage().size()));
-                        break;
+                        idx_selected = idx;
+
+                        titrePage.setText(chapitreTitle + " : " + String.valueOf(idx + 1) + " / " + String.valueOf(nbpages));
+
                     }
+
+
+
+                    paginationArray.add(String.valueOf(idx + 1));
+
                     idx += 1;
                 }
+
+                paginationAdapter = new ArrayAdapter<String>(LecteurActivity.this, android.R.layout.simple_spinner_item, paginationArray);
+                navigationPagination.setAdapter(paginationAdapter);
+                navigationPagination.setSelection(idx_selected);
+
+                navigationPaginationSuffix.setText(" / " + String.valueOf(currentChapitre.getLstPage().size()-1));
 
             }else
             {
@@ -350,12 +416,15 @@ public class LecteurActivity extends AppCompatActivity
             case R.id.menu_home:
                 Intent intent_main = new Intent(LecteurActivity.this, MainActivity.class);
                 startActivity(intent_main);
+                return true;
             case R.id.menu_tops:
                 Intent intent_tops = new Intent(LecteurActivity.this, TopsActivity.class);
                 startActivity(intent_tops);
+                return true;
             case R.id.menu_list_mangas:
                 Intent intent_mangas = new Intent(LecteurActivity.this, MangasActivity.class);
                 startActivity(intent_mangas);
+                return true;
             case R.id.menu_favoris:
                 // Comportement du bouton "Recherche"
                 return true;
