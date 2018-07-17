@@ -21,10 +21,12 @@ public class Serie {
     private String status;
     private String synopsis;
     private Integer idxCurrentChapitre;
+    private Boolean favoris;
 
     public Serie(String title, String url) {
         this.title = title;
         this.url = url;
+        this.favoris = false;
 
         lstChapitres = new ArrayList<Chapitre>();
         lstTomes = new ArrayList<Tome>();
@@ -35,6 +37,7 @@ public class Serie {
         this.url = url;
         this.genre = genre;
         this.status = status;
+        this.favoris = false;
 
         lstChapitres = new ArrayList<Chapitre>();
         lstTomes = new ArrayList<Tome>();
@@ -150,6 +153,14 @@ public class Serie {
 
     public void setIdxCurrentChapitre(Integer idxCurrentChapitre) {
         this.idxCurrentChapitre = idxCurrentChapitre;
+    }
+
+    public Boolean isFavoris() {
+        return favoris;
+    }
+
+    public void setFavoris(Boolean favoris) {
+        this.favoris = favoris;
     }
 
 

@@ -10,42 +10,41 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import japscan.gtheurillat.adapter.NouveautesExpandableListAdapter;
+import japscan.gtheurillat.adapter.FavorisListAdapter;
 import japscan.gtheurillat.adapter.TopsListAdapter;
-import japscan.gtheurillat.model.Chapitre;
-import japscan.gtheurillat.model.Nouveaute;
+import japscan.gtheurillat.db.dao.FavorisDAO;
+import japscan.gtheurillat.db.model.Favoris;
 import japscan.gtheurillat.model.Serie;
 import japscan.gtheurillat.util.JapScanProxy;
 
 
-public class TopsActivity extends AppCompatActivity {
+public class FavorisActivity extends AppCompatActivity {
 
     ListView listView;
     ListAdapter listAdapter;
-    List<Serie> listTitle;
-    List<Serie> listDetail;
+    List<Favoris> listTitle;
+    List<Favoris> listDetail;
     ProgressDialog mProgressDialog;
     Context mainContext;
+    FavorisDAO favDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tops);
+        setContentView(R.layout.activity_favoris);
 
         //setTitle("Nouveautés");
 
-        listView = (ListView) findViewById(R.id.lst_tops_semaine);
+        listView = (ListView) findViewById(R.id.lst_favoris);
         mainContext = this;
+
+        favDAO = new FavorisDAO(this);
 
         new Tops().execute();
 
@@ -59,8 +58,8 @@ public class TopsActivity extends AppCompatActivity {
                                 + " -> "
                                 + listDetail.get(position).getUrl(), Toast.LENGTH_SHORT
                 ).show();
-                Intent intent_seriedetail = new Intent(TopsActivity.this, SerieDetailsActivity.class);
-                intent_seriedetail.putExtra("SERIE_TITLE", listDetail.get(position).getTitle());
+                Intent intent_seriedetail = new Intent(FavorisActivity.this, SerieDetailsActivity.class);
+                intent_seriedetail.putExtra("SERIE_TITLE", listDetail.get(position).getName());
                 intent_seriedetail.putExtra("SERIE_URL", listDetail.get(position).getUrl());
                 startActivity(intent_seriedetail);
             }
@@ -75,8 +74,8 @@ public class TopsActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mProgressDialog = new ProgressDialog(TopsActivity.this);
-            mProgressDialog.setTitle("Tops de la semaine");
+            mProgressDialog = new ProgressDialog(FavorisActivity.this);
+            mProgressDialog.setTitle("Favoris");
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.setIndeterminate(false);
             mProgressDialog.show();
@@ -85,8 +84,7 @@ public class TopsActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                JapScanProxy proxy = new JapScanProxy();
-                listDetail = proxy.getTops();
+                listDetail = favDAO.selectionnerAll();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -100,7 +98,7 @@ public class TopsActivity extends AppCompatActivity {
             //txttitle.setText(title);
 
 
-            listAdapter = new TopsListAdapter(mainContext, listDetail);
+            listAdapter = new FavorisListAdapter(mainContext, listDetail);
             listView.setAdapter(listAdapter);
 
             mProgressDialog.dismiss();
@@ -117,18 +115,19 @@ public class TopsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_home:
-                Intent intent_main = new Intent(TopsActivity.this, MainActivity.class);
+                Intent intent_main = new Intent(FavorisActivity.this, MainActivity.class);
                 startActivity(intent_main);
                 return true;
             case R.id.menu_tops:
+                Intent intent_tops = new Intent(FavorisActivity.this, TopsActivity.class);
+                startActivity(intent_tops);
                 return true;
             case R.id.menu_list_mangas:
-                Intent intent_mangas = new Intent(TopsActivity.this, MangasActivity.class);
+                Intent intent_mangas = new Intent(FavorisActivity.this, MangasActivity.class);
                 startActivity(intent_mangas);
                 return true;
             case R.id.menu_favoris:
-                Intent intent_favoris = new Intent(TopsActivity.this, FavorisActivity.class);
-                startActivity(intent_favoris);
+                // Comportement du bouton "Recherche"
                 return true;
             case R.id.menu_settings:
                 // Comportement du bouton "Paramètres"

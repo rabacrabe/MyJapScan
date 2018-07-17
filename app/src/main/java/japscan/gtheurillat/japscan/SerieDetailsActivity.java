@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,9 +20,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import japscan.gtheurillat.adapter.SerieDetailsExpandableListAdapter;
+import japscan.gtheurillat.db.dao.FavorisDAO;
+import japscan.gtheurillat.db.model.Favoris;
 import japscan.gtheurillat.model.Chapitre;
 import japscan.gtheurillat.model.Serie;
 import japscan.gtheurillat.model.Tome;
+import japscan.gtheurillat.db.DbFavorisBaseHelper;
 import japscan.gtheurillat.util.JapScanProxy;
 
 
@@ -36,7 +40,9 @@ public class SerieDetailsActivity extends AppCompatActivity {
     String title;
     String url;
     Serie serie;
-
+    ImageView imgFavoris;
+    FavorisDAO favDAO;
+    Favoris favoris;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +56,42 @@ public class SerieDetailsActivity extends AppCompatActivity {
         title = getIntent().getStringExtra("SERIE_TITLE");
         url = getIntent().getStringExtra("SERIE_URL");
 
+        favDAO = new FavorisDAO(this);
+
+
+
         TextView titleTextView = (TextView)findViewById(R.id.textMainTitle);
         titleTextView.setText(title);
 
         expandableListView = (ExpandableListView) findViewById(R.id.lst_dernieres_sorties);
         new SerieDetails().execute();
 
+
+        imgFavoris = (ImageView) findViewById(R.id.imgFavoris);
+        imgFavoris.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                if (serie.isFavoris() == true) {
+                    favDAO.supprimer(favoris);
+
+                    imgFavoris.setImageResource(android.R.drawable.btn_star_big_off);
+                    serie.setFavoris(false);
+                    Toast.makeText(getApplicationContext(),"Supprimé des series favorites", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    favoris = new Favoris(title, url, serie.getGenre(), serie.getStatus());
+                    favDAO.ajouter(favoris);
+
+                    imgFavoris.setImageResource(android.R.drawable.btn_star_big_on);
+                    serie.setFavoris(true);
+
+                    Toast.makeText(getApplicationContext(),"Ajouté aux series favorites", Toast.LENGTH_LONG).show();
+
+                }
+            }
+        });
 
 
         expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
@@ -171,6 +207,12 @@ public class SerieDetailsActivity extends AppCompatActivity {
             TextView synopsisTextView = (TextView)findViewById(R.id.textDetailSynopsis);
             synopsisTextView.setText(serie.getSynopsis());
 
+            favoris = favDAO.selectionner(url);
+            if (favoris != null) {
+                imgFavoris.setImageResource(android.R.drawable.btn_star_big_on);
+                serie.setFavoris(true);
+            }
+
             //expandableListTitle = new ArrayList<Tome>(expandableListDetail.keySet());
             expandableListAdapter = new SerieDetailsExpandableListAdapter(mainContext, expandableListTitle, expandableListDetail);
             expandableListView.setAdapter(expandableListAdapter);
@@ -201,7 +243,8 @@ public class SerieDetailsActivity extends AppCompatActivity {
                 startActivity(intent_mangas);
                 return true;
             case R.id.menu_favoris:
-                // Comportement du bouton "Recherche"
+                Intent intent_favoris = new Intent(SerieDetailsActivity.this, FavorisActivity.class);
+                startActivity(intent_favoris);
                 return true;
             case R.id.menu_settings:
                 // Comportement du bouton "Paramètres"

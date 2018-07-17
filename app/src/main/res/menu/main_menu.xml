@@ -26,6 +26,12 @@
         android:title="Favoris"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/menu_bookmark"
+        android:icon="@android:drawable/btn_star"
+        android:showAsAction="never"
+        android:title="Marques pages"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/menu_settings"
         android:icon="@android:drawable/ic_menu_preferences"
         android:showAsAction="never"

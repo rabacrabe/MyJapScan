@@ -195,7 +195,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent_mangas);
                 return true;
             case R.id.menu_favoris:
-                // Comportement du bouton "Recherche"
+                Intent intent_favoris = new Intent(MainActivity.this, FavorisActivity.class);
+                startActivity(intent_favoris);
                 return true;
             case R.id.menu_settings:
                 // Comportement du bouton "Paramètres"

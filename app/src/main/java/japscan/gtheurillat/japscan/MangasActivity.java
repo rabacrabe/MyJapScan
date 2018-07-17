@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -55,7 +56,6 @@ public class MangasActivity extends AppCompatActivity {
 
         searchView = (SearchView)findViewById(R.id.recherche_manga);
 
-
         new Catalogue().execute();
 
         // Get the intent, verify the action and get the query
@@ -64,6 +64,7 @@ public class MangasActivity extends AppCompatActivity {
             String query = intent.getStringExtra(SearchManager.QUERY);
             //doMySearch(query);
         }
+
 
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -170,7 +171,8 @@ public class MangasActivity extends AppCompatActivity {
             case R.id.menu_list_mangas:
                 return true;
             case R.id.menu_favoris:
-                // Comportement du bouton "Recherche"
+                Intent intent_favoris = new Intent(MangasActivity.this, FavorisActivity.class);
+                startActivity(intent_favoris);
                 return true;
             case R.id.menu_settings:
                 // Comportement du bouton "Paramètres"

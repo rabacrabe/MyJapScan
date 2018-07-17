@@ -22,9 +22,9 @@
         <activity android:name=".TopsActivity" />
         <activity android:name=".MangasActivity" />
         <activity android:name=".SerieDetailsActivity" />
+        <activity android:name=".FavorisActivity" />
         <activity
             android:name=".LecteurActivity"
-            android:label="@string/title_activity_lecteur"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
