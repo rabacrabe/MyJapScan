@@ -1,7 +1,9 @@
 package japscan.gtheurillat.japscan;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -52,6 +54,8 @@ public class SerieDetailsActivity extends AppCompatActivity {
         //setTitle("Nouveautés");
 
         mainContext = this;
+
+
 
         title = getIntent().getStringExtra("SERIE_TITLE");
         url = getIntent().getStringExtra("SERIE_URL");
@@ -178,6 +182,7 @@ public class SerieDetailsActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                showError(e.toString());
             }
             return null;
         }
@@ -188,36 +193,39 @@ public class SerieDetailsActivity extends AppCompatActivity {
             //TextView txttitle = (TextView) findViewById(R.id.titletxt);
             //txttitle.setText(title);
 
+            try {
+                TextView auteurTextView = (TextView) findViewById(R.id.textDetailAuteur);
+                auteurTextView.setText(serie.getAuteur());
 
-            TextView auteurTextView = (TextView)findViewById(R.id.textDetailAuteur);
-            auteurTextView.setText(serie.getAuteur());
+                TextView dateTextView = (TextView) findViewById(R.id.textDetailDate);
+                dateTextView.setText(serie.getDate_sortie());
 
-            TextView dateTextView = (TextView)findViewById(R.id.textDetailDate);
-            dateTextView.setText(serie.getDate_sortie());
+                TextView genreTextView = (TextView) findViewById(R.id.textDetailGenre);
+                genreTextView.setText(serie.getGenre());
 
-            TextView genreTextView = (TextView)findViewById(R.id.textDetailGenre);
-            genreTextView.setText(serie.getGenre());
+                TextView fansubTextView = (TextView) findViewById(R.id.textDetailFansub);
+                fansubTextView.setText(serie.getFansub());
 
-            TextView fansubTextView = (TextView)findViewById(R.id.textDetailFansub);
-            fansubTextView.setText(serie.getFansub());
+                TextView statusTextView = (TextView) findViewById(R.id.textDetailStatus);
+                statusTextView.setText(serie.getStatus());
 
-            TextView statusTextView = (TextView)findViewById(R.id.textDetailStatus);
-            statusTextView.setText(serie.getStatus());
+                TextView synopsisTextView = (TextView) findViewById(R.id.textDetailSynopsis);
+                synopsisTextView.setText(serie.getSynopsis());
 
-            TextView synopsisTextView = (TextView)findViewById(R.id.textDetailSynopsis);
-            synopsisTextView.setText(serie.getSynopsis());
+                favoris = favDAO.selectionner(url);
+                if (favoris != null) {
+                    imgFavoris.setImageResource(android.R.drawable.btn_star_big_on);
+                    serie.setFavoris(true);
+                }
 
-            favoris = favDAO.selectionner(url);
-            if (favoris != null) {
-                imgFavoris.setImageResource(android.R.drawable.btn_star_big_on);
-                serie.setFavoris(true);
+                //expandableListTitle = new ArrayList<Tome>(expandableListDetail.keySet());
+                expandableListAdapter = new SerieDetailsExpandableListAdapter(mainContext, expandableListTitle, expandableListDetail);
+                expandableListView.setAdapter(expandableListAdapter);
+            } catch (Exception e) {
+                showError(e.toString());
             }
+                mProgressDialog.dismiss();
 
-            //expandableListTitle = new ArrayList<Tome>(expandableListDetail.keySet());
-            expandableListAdapter = new SerieDetailsExpandableListAdapter(mainContext, expandableListTitle, expandableListDetail);
-            expandableListView.setAdapter(expandableListAdapter);
-
-            mProgressDialog.dismiss();
         }
     }
 
@@ -252,6 +260,30 @@ public class SerieDetailsActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void showError(String message) {
+        AlertDialog.Builder alertDialogBuilder;
+        alertDialogBuilder = new AlertDialog.Builder(mainContext);
+
+        alertDialogBuilder.setTitle("Erreur");
+
+        // set dialog message
+        alertDialogBuilder
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // if this button is clicked, close
+                        // current activity
+                        SerieDetailsActivity.this.finish();
+                    }
+                });
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
     }
 
 }

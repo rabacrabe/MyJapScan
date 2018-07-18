@@ -1,8 +1,10 @@
 package japscan.gtheurillat.japscan;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -39,6 +41,7 @@ public class MangasActivity extends AppCompatActivity {
     ProgressDialog mProgressDialog;
     Context mainContext;
     SearchView searchView;
+    AlertDialog.Builder alertDialogBuilder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,7 @@ public class MangasActivity extends AppCompatActivity {
 
 
         mainContext = this;
+        alertDialogBuilder = new AlertDialog.Builder(mainContext);
 
         //listView = (ListView) findViewById(R.id.lst_mangas);
         listView = (IndexableListView) findViewById(R.id.lst_mangas);
@@ -82,6 +86,8 @@ public class MangasActivity extends AppCompatActivity {
                 intent_seriedetail.putExtra("SERIE_TITLE", listAdapter.getItem(position).getTitle());
                 intent_seriedetail.putExtra("SERIE_URL", listAdapter.getItem(position).getUrl());
                 startActivity(intent_seriedetail);
+
+
             }
         });
 
@@ -126,6 +132,20 @@ public class MangasActivity extends AppCompatActivity {
                 listDetail = proxy.getCatalogue();
             } catch (Exception e) {
                 e.printStackTrace();
+                // set title
+                alertDialogBuilder.setTitle("Erreur");
+
+                // set dialog message
+                alertDialogBuilder
+                        .setMessage(e.toString())
+                        .setCancelable(false)
+                        .setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // if this button is clicked, close
+                                // current activity
+                                MangasActivity.this.finish();
+                            }
+                        });
             }
             return null;
         }

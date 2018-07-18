@@ -168,7 +168,12 @@ public class JapScanProxy {
             Element synopsis_node = doc.select("#synopsis").first();
             serie.setSynopsis(synopsis_node.text());
 
-            Log.e("SYNOPSIS", synopsis_node.text());
+            Log.e("AUTEUR", serie.getAuteur());
+            Log.e("DATE", serie.getDate_sortie());
+            Log.e("GENRE", serie.getGenre());
+            Log.e("FANSUB", serie.getFansub());
+            Log.e("STATUS", serie.getStatus());
+            Log.e("SYNOPSIS", serie.getSynopsis());
 
             Element chapitres_node = doc.select("#liste_chapitres").first();
 
@@ -190,6 +195,10 @@ public class JapScanProxy {
 
                         Chapitre newChapitre = new Chapitre(chapitreNode.text(), "https:"+chapitreNode.attr("href").toString());
 
+                        if (newTome == null) {
+                            newTome = new Tome("PLUS RECENT");
+                        }
+
                         newTome.addChapitre(newChapitre);
                     }
                 }
@@ -200,6 +209,8 @@ public class JapScanProxy {
         }  catch (IOException e) {
             e.printStackTrace();
         }
+
+        Log.e("NB CHAPITITRES", String.valueOf(serie.getLstChapitres().size()));
 
         return serie;
     }
