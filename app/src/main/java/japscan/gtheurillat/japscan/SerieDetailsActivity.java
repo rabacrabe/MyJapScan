@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -211,6 +212,7 @@ public class SerieDetailsActivity extends AppCompatActivity {
 
                 TextView synopsisTextView = (TextView) findViewById(R.id.textDetailSynopsis);
                 synopsisTextView.setText(serie.getSynopsis());
+                synopsisTextView.setMovementMethod(new ScrollingMovementMethod());
 
                 favoris = favDAO.selectionner(url);
                 if (favoris != null) {

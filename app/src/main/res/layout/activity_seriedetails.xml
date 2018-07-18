@@ -124,6 +124,8 @@
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:textColor="#222222"
+        android:maxLines = "5"
+        android:scrollbars = "vertical"
         android:text="Synopsis ..."
         />
 
