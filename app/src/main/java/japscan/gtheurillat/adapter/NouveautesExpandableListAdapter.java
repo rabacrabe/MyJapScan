@@ -56,6 +56,10 @@ public class NouveautesExpandableListAdapter extends BaseExpandableListAdapter {
         }
         TextView expandedListTextView = (TextView) convertView.findViewById(R.id.expandedListItem);
         expandedListTextView.setText(expandedListChapitre.getTitle());
+
+        TextView expandedListTextViewDate = (TextView) convertView.findViewById(R.id.expandedListItemDate);
+        expandedListTextViewDate.setText(expandedListChapitre.getDate_sortie());
+
         return convertView;
     }
 

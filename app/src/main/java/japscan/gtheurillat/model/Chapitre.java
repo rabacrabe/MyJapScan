@@ -11,6 +11,7 @@ public class Chapitre {
     private String title;
     private String url;
     private ArrayList<Page> lstPage;
+    private String date_sortie;
 
 
     public Chapitre(String title, String url) {
@@ -48,4 +49,11 @@ public class Chapitre {
         this.lstPage.add(page);
     }
 
+    public String getDate_sortie() {
+        return date_sortie;
+    }
+
+    public void setDate_sortie(String date_sortie) {
+        this.date_sortie = date_sortie;
+    }
 }

@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
                         List<Chapitre> lst_chapitres = new ArrayList<Chapitre>();
 
                         for (Chapitre chapitre : serie.getLstChapitres()) {
+                            chapitre.setDate_sortie(nouveaute.getDate());
                             lst_chapitres.add(chapitre);
                         }
 
