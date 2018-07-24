@@ -53,12 +53,14 @@ public class TopsActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Object listItem = listDetail.get(position);
+                /*
                 Toast.makeText(
                         getApplicationContext(),
                         listDetail.get(position)
                                 + " -> "
                                 + listDetail.get(position).getUrl(), Toast.LENGTH_SHORT
                 ).show();
+                */
                 Intent intent_seriedetail = new Intent(TopsActivity.this, SerieDetailsActivity.class);
                 intent_seriedetail.putExtra("SERIE_TITLE", listDetail.get(position).getTitle());
                 intent_seriedetail.putExtra("SERIE_URL", listDetail.get(position).getUrl());
@@ -129,6 +131,10 @@ public class TopsActivity extends AppCompatActivity {
             case R.id.menu_favoris:
                 Intent intent_favoris = new Intent(TopsActivity.this, FavorisActivity.class);
                 startActivity(intent_favoris);
+                return true;
+            case R.id.menu_bookmark:
+                Intent intent_bookmark = new Intent(TopsActivity.this, BookmarkActivity.class);
+                startActivity(intent_bookmark);
                 return true;
             case R.id.menu_settings:
                 // Comportement du bouton "Paramètres"

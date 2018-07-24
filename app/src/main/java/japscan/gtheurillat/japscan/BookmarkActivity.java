@@ -16,51 +16,50 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import japscan.gtheurillat.adapter.BookmarkListAdapter;
 import japscan.gtheurillat.adapter.FavorisListAdapter;
-import japscan.gtheurillat.adapter.TopsListAdapter;
+import japscan.gtheurillat.db.dao.BookmarkDAO;
 import japscan.gtheurillat.db.dao.FavorisDAO;
+import japscan.gtheurillat.db.model.Bookmark;
 import japscan.gtheurillat.db.model.Favoris;
-import japscan.gtheurillat.model.Serie;
-import japscan.gtheurillat.util.JapScanProxy;
 
 
-public class FavorisActivity extends AppCompatActivity {
+public class BookmarkActivity extends AppCompatActivity {
 
     ListView listView;
     ListAdapter listAdapter;
-    List<Favoris> listTitle;
-    List<Favoris> listDetail;
+    List<Bookmark> listTitle;
+    List<Bookmark> listDetail;
     ProgressDialog mProgressDialog;
     Context mainContext;
-    FavorisDAO favDAO;
+    BookmarkDAO bmDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_favoris);
+        setContentView(R.layout.activity_bookmark);
 
         //setTitle("Nouveautés");
 
-        listView = (ListView) findViewById(R.id.lst_favoris);
+        listView = (ListView) findViewById(R.id.lst_bookmark);
         mainContext = this;
 
-        favDAO = new FavorisDAO(this);
+        bmDAO = new BookmarkDAO(this);
 
-        new Tops().execute();
-
+        new Bookmarks().execute();
 
 
     }
 
     // Title AsyncTask
-    private class Tops extends AsyncTask<Void, Void, Void> {
+    private class Bookmarks extends AsyncTask<Void, Void, Void> {
         String title;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mProgressDialog = new ProgressDialog(FavorisActivity.this);
-            mProgressDialog.setTitle("Favoris");
+            mProgressDialog = new ProgressDialog(BookmarkActivity.this);
+            mProgressDialog.setTitle("Marques pages");
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.setIndeterminate(false);
             mProgressDialog.show();
@@ -69,7 +68,7 @@ public class FavorisActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                listDetail = favDAO.selectionnerAll();
+                listDetail = bmDAO.selectionnerAll();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -82,34 +81,41 @@ public class FavorisActivity extends AppCompatActivity {
             //TextView txttitle = (TextView) findViewById(R.id.titletxt);
             //txttitle.setText(title);
 
+
             if (listDetail.size() > 0) {
-                listAdapter = new FavorisListAdapter(mainContext, listDetail);
+
+                listAdapter = new BookmarkListAdapter(mainContext, listDetail);
                 listView.setAdapter(listAdapter);
 
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Object listItem = listDetail.get(position);
-                /*
+/*
                 Toast.makeText(
                         getApplicationContext(),
                         listDetail.get(position)
+                                + listDetail.get(position).getSerieName()
                                 + " -> "
-                                + listDetail.get(position).getUrl(), Toast.LENGTH_SHORT
+                                + listDetail.get(position).getPageUrl(), Toast.LENGTH_SHORT
                 ).show();
-                */
-                        Intent intent_seriedetail = new Intent(FavorisActivity.this, SerieDetailsActivity.class);
-                        intent_seriedetail.putExtra("SERIE_TITLE", listDetail.get(position).getName());
-                        intent_seriedetail.putExtra("SERIE_URL", listDetail.get(position).getUrl());
-                        startActivity(intent_seriedetail);
+*/
+                        Intent intent_lecteur = new Intent(BookmarkActivity.this, LecteurActivity.class);
+                        intent_lecteur.putExtra("SERIE_TITLE", listDetail.get(position).getSerieName());
+                        intent_lecteur.putExtra("SERIE_URL", "");
+                        intent_lecteur.putExtra("CHAPITRE_TITLE", listDetail.get(position).getChapterName());
+                        intent_lecteur.putExtra("CHAPITRE_URL", listDetail.get(position).getPageUrl());
+                        startActivity(intent_lecteur);
                     }
                 });
-            } else {
+            }
+            else{
                 Toast.makeText(
                         getApplicationContext(),
-                        "Aucun favoris!", Toast.LENGTH_LONG
+                        "Aucun marque page!", Toast.LENGTH_LONG
                 ).show();
             }
+
 
             mProgressDialog.dismiss();
         }
@@ -125,23 +131,22 @@ public class FavorisActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_home:
-                Intent intent_main = new Intent(FavorisActivity.this, MainActivity.class);
+                Intent intent_main = new Intent(BookmarkActivity.this, MainActivity.class);
                 startActivity(intent_main);
                 return true;
             case R.id.menu_tops:
-                Intent intent_tops = new Intent(FavorisActivity.this, TopsActivity.class);
+                Intent intent_tops = new Intent(BookmarkActivity.this, TopsActivity.class);
                 startActivity(intent_tops);
                 return true;
             case R.id.menu_list_mangas:
-                Intent intent_mangas = new Intent(FavorisActivity.this, MangasActivity.class);
+                Intent intent_mangas = new Intent(BookmarkActivity.this, MangasActivity.class);
                 startActivity(intent_mangas);
                 return true;
             case R.id.menu_favoris:
-                // Comportement du bouton "Recherche"
+                Intent intent_favoris = new Intent(BookmarkActivity.this, FavorisActivity.class);
+                startActivity(intent_favoris);
                 return true;
             case R.id.menu_bookmark:
-                Intent intent_bookmark = new Intent(FavorisActivity.this, BookmarkActivity.class);
-                startActivity(intent_bookmark);
                 return true;
             case R.id.menu_settings:
                 // Comportement du bouton "Paramètres"

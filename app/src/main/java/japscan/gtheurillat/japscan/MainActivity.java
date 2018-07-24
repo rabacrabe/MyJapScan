@@ -58,9 +58,11 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onGroupExpand(int groupPosition) {
+            /*
             Toast.makeText(getApplicationContext(),
                     expandableListTitle.get(groupPosition) + " List Expanded.",
                     Toast.LENGTH_SHORT).show();
+                    */
         }
         });
 
@@ -68,10 +70,11 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onGroupCollapse(int groupPosition) {
+            /*
             Toast.makeText(getApplicationContext(),
                     expandableListTitle.get(groupPosition) + " List Collapsed.",
                     Toast.LENGTH_SHORT).show();
-
+*/
         }
         });
 
@@ -86,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                         expandableListTitle.get(groupPosition)).get(
                         childPosition).getUrl();
 
-
+/*
                 Toast.makeText(
                         getApplicationContext(),
                         expandableListTitle.get(groupPosition)
@@ -95,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                                 expandableListTitle.get(groupPosition)).get(
                                 childPosition).getUrl(), Toast.LENGTH_SHORT
                 ).show();
-
+*/
 
 
 
@@ -198,6 +201,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menu_favoris:
                 Intent intent_favoris = new Intent(MainActivity.this, FavorisActivity.class);
                 startActivity(intent_favoris);
+                return true;
+            case R.id.menu_bookmark:
+                Intent intent_bookmark = new Intent(MainActivity.this, BookmarkActivity.class);
+                startActivity(intent_bookmark);
                 return true;
             case R.id.menu_settings:
                 // Comportement du bouton "Paramètres"

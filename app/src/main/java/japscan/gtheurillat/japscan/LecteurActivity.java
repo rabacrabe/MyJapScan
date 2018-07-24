@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import japscan.gtheurillat.adapter.TopsListAdapter;
+import japscan.gtheurillat.db.dao.BookmarkDAO;
+import japscan.gtheurillat.db.model.Bookmark;
 import japscan.gtheurillat.model.Chapitre;
 import japscan.gtheurillat.model.Page;
 import japscan.gtheurillat.model.Serie;
@@ -61,6 +63,9 @@ public class LecteurActivity extends AppCompatActivity
     Spinner navigationPagination;
     TextView navigationPaginationSuffix;
     ArrayAdapter<String> paginationAdapter;
+    BookmarkDAO bmDAO;
+    Bookmark bookmark;
+    Integer idx_selected;
 
     View headerView;
     int check = 0;
@@ -75,6 +80,8 @@ public class LecteurActivity extends AppCompatActivity
         setContentView(R.layout.activity_lecteur);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        bmDAO = new BookmarkDAO(this);
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         headerView = navigationView.getHeaderView(0);
@@ -95,6 +102,35 @@ public class LecteurActivity extends AppCompatActivity
 
 
         img = (ImageView)findViewById(R.id.lecteur_image);
+
+        img.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Bookmark newBookmark = new Bookmark();
+                newBookmark.setSerieName(serie.getTitle());
+                newBookmark.setChapterName(chapitreTitle);
+                newBookmark.setPageNumber(String.valueOf(idx_selected));
+                newBookmark.setPageUrl(chapitreUrl);
+
+
+                bookmark = null;
+                bookmark = bmDAO.selectionnerFromSerie(serie.getTitle());
+
+                if (bookmark == null) {
+                    bmDAO.ajouter(newBookmark);
+                    Toast.makeText(getBaseContext(), "Serie bookmarked (new bookmark)", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    newBookmark.setId(bookmark.getId());
+                    bmDAO.modifier(newBookmark);
+                    Toast.makeText(getBaseContext(), "Serie bookmarked (update bookmark)", Toast.LENGTH_SHORT).show();
+                }
+
+                return true;
+            }
+        });
+
+
         navigationPagination = (Spinner)headerView.findViewById(R.id.nav_pagination_lst);
         navigationPaginationSuffix = (TextView)headerView.findViewById(R.id.nav_pagination_suffix);
 
@@ -106,11 +142,13 @@ public class LecteurActivity extends AppCompatActivity
                 if(++check > 1) {
                     Chapitre currentChapitre = serie.getLstChapitres().get(1);
                     Page selectedPage = currentChapitre.getLstPage().get(position);
+                    /*
                     Toast.makeText(
                             getApplicationContext(),
                             "Go to page -> " + selectedPage.getTitle() + " " + selectedPage.getUrl(), Toast.LENGTH_SHORT
-                    ).show();
-                    goToPage(selectedPage.getUrl());
+                    ).show();*/
+
+                    goToPage(selectedPage.getUrl(), String.valueOf(position+1));
                 }
             }
 
@@ -218,10 +256,10 @@ public class LecteurActivity extends AppCompatActivity
         return true;
     }
 
-    public void goToPage(String pageUrl) {
+    public void goToPage(String pageUrl, String pageNumber) {
         Toast.makeText(
                 getApplicationContext(),
-                "Go page -> " + pageUrl, Toast.LENGTH_SHORT
+                "Go page -> " + pageNumber, Toast.LENGTH_SHORT
         ).show();
 
         chapitreUrl = pageUrl;
@@ -238,7 +276,7 @@ public class LecteurActivity extends AppCompatActivity
 
             Toast.makeText(
                     getApplicationContext(),
-                    "Next page -> " + nexPage.getUrl(), Toast.LENGTH_SHORT
+                    "Next page", Toast.LENGTH_SHORT
             ).show();
 
             chapitreUrl = nexPage.getUrl();
@@ -255,7 +293,7 @@ public class LecteurActivity extends AppCompatActivity
 
             Toast.makeText(
                     getApplicationContext(),
-                    "Precedent page -> " + precPage.getTitle(), Toast.LENGTH_SHORT
+                    "Precedent page", Toast.LENGTH_SHORT
             ).show();
 
             chapitreUrl = precPage.getUrl();
@@ -269,7 +307,7 @@ public class LecteurActivity extends AppCompatActivity
 
         Toast.makeText(
                 getApplicationContext(),
-                "Next Chapitre -> " + nextChapitre.getTitle(), Toast.LENGTH_SHORT
+                "Next Chapter", Toast.LENGTH_SHORT
         ).show();
 
         lecteurTitreChapitre.setText(nextChapitre.getTitle());
@@ -355,7 +393,7 @@ public class LecteurActivity extends AppCompatActivity
                 currentChapitre = serie.getLstChapitres().get(serie.getIdxCurrentChapitre());
 
                 ArrayList<String> paginationArray = new ArrayList<String>();
-                Integer idx_selected = 0;
+                idx_selected = 0;
                 Integer idx = 0;
                 for (Page page : currentChapitre.getLstPage()) {
                     if (page.isSelected() == true) {
@@ -428,6 +466,10 @@ public class LecteurActivity extends AppCompatActivity
             case R.id.menu_favoris:
                 Intent intent_favoris = new Intent(LecteurActivity.this, FavorisActivity.class);
                 startActivity(intent_favoris);
+                return true;
+            case R.id.menu_bookmark:
+                Intent intent_bookmark = new Intent(LecteurActivity.this, BookmarkActivity.class);
+                startActivity(intent_bookmark);
                 return true;
             case R.id.menu_settings:
                 // Comportement du bouton "Paramètres"

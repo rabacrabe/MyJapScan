@@ -7,20 +7,23 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+
+import japscan.gtheurillat.db.dao.BookmarkDAO;
+import japscan.gtheurillat.db.model.Bookmark;
+
 /**
  * Created by gtheurillat on 17/07/2018.
  */
 
-public class DbFavorisBaseHelper  extends SQLiteOpenHelper{
+public class DbBookmarkBaseHelper extends SQLiteOpenHelper{
 
-    private DbFavorisBaseHelper mHandler = null;
-
-    public static final String TABLE_NAME = "favoris";
+    public static final String TABLE_NAME = "bookmark";
     public static final String COL_1 = "ID";
-    public static final String COL_2 = "NAME";
-    public static final String COL_3 = "URL";
-    public static final String COL_4 = "GENRE";
-    public static final String COL_5 = "STATUS";
+    public static final String COL_2 = "NAME_SERIE";
+    public static final String COL_3 = "NAME_CHAPTER";
+    public static final String COL_4 = "NAME_PAGE";
+    public static final String COL_5 = "URL";
 
     /*
     public DbFavorisBaseHelper(Context context) {
@@ -28,7 +31,7 @@ public class DbFavorisBaseHelper  extends SQLiteOpenHelper{
     }
 */
 
-    public DbFavorisBaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    public DbBookmarkBaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }
 
@@ -73,9 +76,6 @@ public class DbFavorisBaseHelper  extends SQLiteOpenHelper{
 
             } while (cursor.moveToNext());
         }
-
-
-
     }
 
 }

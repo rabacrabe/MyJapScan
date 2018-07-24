@@ -11,15 +11,17 @@ import android.util.Log;
 public abstract class DAOBase {
     // Nous sommes à la première version de la base
     // Si je décide de la mettre à jour, il faudra changer cet attribut
-    protected final static int VERSION = 5;
+    protected final static int VERSION = 12;
     // Le nom du fichier qui représente ma base
     protected final static String NOM = "japscan.db";
 
     protected SQLiteDatabase mDb = null;
-    protected DbFavorisBaseHelper mHandler = null;
+    //protected DbFavorisBaseHelper mHandler = null;
+    protected DbBaseHelper mHandler = null;
 
     public DAOBase(Context pContext) {
-        this.mHandler = new DbFavorisBaseHelper(pContext, NOM, null, VERSION);
+        //this.mHandler = new DbFavorisBaseHelper(pContext, NOM, null, VERSION);
+        this.mHandler = new DbBaseHelper(pContext, NOM, null, VERSION);
     }
 
     public SQLiteDatabase open() {

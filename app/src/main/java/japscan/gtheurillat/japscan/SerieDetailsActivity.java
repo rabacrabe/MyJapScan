@@ -103,9 +103,11 @@ public class SerieDetailsActivity extends AppCompatActivity {
 
         @Override
         public void onGroupExpand(int groupPosition) {
+            /*
             Toast.makeText(getApplicationContext(),
                     expandableListTitle.get(groupPosition) + " List Expanded.",
                     Toast.LENGTH_SHORT).show();
+                    */
         }
         });
 
@@ -113,9 +115,11 @@ public class SerieDetailsActivity extends AppCompatActivity {
 
         @Override
         public void onGroupCollapse(int groupPosition) {
+            /*
             Toast.makeText(getApplicationContext(),
                     expandableListTitle.get(groupPosition) + " List Collapsed.",
                     Toast.LENGTH_SHORT).show();
+                    */
 
         }
         });
@@ -130,6 +134,8 @@ public class SerieDetailsActivity extends AppCompatActivity {
                 String chapitre_url = expandableListDetail.get(
                                                     expandableListTitle.get(groupPosition)).get(
                                                     childPosition).getUrl();
+
+                /*
                 Toast.makeText(
                         getApplicationContext(),
                         expandableListTitle.get(groupPosition)
@@ -138,7 +144,7 @@ public class SerieDetailsActivity extends AppCompatActivity {
                                 expandableListTitle.get(groupPosition)).get(
                                 childPosition).getUrl(), Toast.LENGTH_SHORT
                 ).show();
-
+*/
                 Intent intent_lecteur = new Intent(SerieDetailsActivity.this, LecteurActivity.class);
                 intent_lecteur.putExtra("SERIE_TITLE", title);
                 intent_lecteur.putExtra("SERIE_URL", url);
@@ -255,6 +261,10 @@ public class SerieDetailsActivity extends AppCompatActivity {
             case R.id.menu_favoris:
                 Intent intent_favoris = new Intent(SerieDetailsActivity.this, FavorisActivity.class);
                 startActivity(intent_favoris);
+                return true;
+            case R.id.menu_bookmark:
+                Intent intent_bookmark = new Intent(SerieDetailsActivity.this, BookmarkActivity.class);
+                startActivity(intent_bookmark);
                 return true;
             case R.id.menu_settings:
                 // Comportement du bouton "Paramètres"

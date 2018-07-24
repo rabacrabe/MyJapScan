@@ -76,12 +76,14 @@ public class MangasActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //Object listItem = listDetail.get(position);
                 Object listItem = listAdapter.getItem(position);
+                /*
                 Toast.makeText(
                         getApplicationContext(),
                         listAdapter.getItem(position)
                                 + " -> "
                                 + listAdapter.getItem(position).getUrl(), Toast.LENGTH_SHORT
                 ).show();
+                */
                 Intent intent_seriedetail = new Intent(MangasActivity.this, SerieDetailsActivity.class);
                 intent_seriedetail.putExtra("SERIE_TITLE", listAdapter.getItem(position).getTitle());
                 intent_seriedetail.putExtra("SERIE_URL", listAdapter.getItem(position).getUrl());
@@ -193,6 +195,10 @@ public class MangasActivity extends AppCompatActivity {
             case R.id.menu_favoris:
                 Intent intent_favoris = new Intent(MangasActivity.this, FavorisActivity.class);
                 startActivity(intent_favoris);
+                return true;
+            case R.id.menu_bookmark:
+                Intent intent_bookmark = new Intent(MangasActivity.this, BookmarkActivity.class);
+                startActivity(intent_bookmark);
                 return true;
             case R.id.menu_settings:
                 // Comportement du bouton "Paramètres"

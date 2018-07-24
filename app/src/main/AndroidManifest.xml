@@ -23,6 +23,7 @@
         <activity android:name=".MangasActivity" />
         <activity android:name=".SerieDetailsActivity" />
         <activity android:name=".FavorisActivity" />
+        <activity android:name=".BookmarkActivity" />
         <activity
             android:name=".LecteurActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
