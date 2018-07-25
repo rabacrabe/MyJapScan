@@ -1,7 +1,9 @@
 package japscan.gtheurillat.japscan;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import japscan.gtheurillat.adapter.BookmarkListAdapter;
@@ -27,9 +30,9 @@ import japscan.gtheurillat.db.model.Favoris;
 public class BookmarkActivity extends AppCompatActivity {
 
     ListView listView;
-    ListAdapter listAdapter;
+    BookmarkListAdapter listAdapter;
     List<Bookmark> listTitle;
-    List<Bookmark> listDetail;
+    ArrayList<Bookmark> listDetail;
     ProgressDialog mProgressDialog;
     Context mainContext;
     BookmarkDAO bmDAO;
@@ -45,6 +48,70 @@ public class BookmarkActivity extends AppCompatActivity {
         mainContext = this;
 
         bmDAO = new BookmarkDAO(this);
+
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent_lecteur = new Intent(BookmarkActivity.this, LecteurActivity.class);
+                /*
+                intent_lecteur.putExtra("SERIE_TITLE", listDetail.get(position).getSerieName());
+                intent_lecteur.putExtra("SERIE_URL", "");
+                intent_lecteur.putExtra("CHAPITRE_TITLE", listDetail.get(position).getChapterName());
+                intent_lecteur.putExtra("CHAPITRE_URL", listDetail.get(position).getPageUrl());
+                */
+
+                intent_lecteur.putExtra("SERIE_TITLE", listAdapter.getItem(position).getSerieName());
+                intent_lecteur.putExtra("SERIE_URL", "");
+                intent_lecteur.putExtra("CHAPITRE_TITLE", listAdapter.getItem(position).getChapterName());
+                intent_lecteur.putExtra("CHAPITRE_URL", listAdapter.getItem(position).getPageUrl());
+
+                startActivity(intent_lecteur);
+
+                //return true;
+            }
+        });
+
+
+
+
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            int pos;
+
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which){
+                        case DialogInterface.BUTTON_POSITIVE:
+                            Bookmark bookm = bmDAO.selectionnerFromSerie(listDetail.get(pos).getSerieName());
+                            bmDAO.supprimer(bookm.getId());
+                            Toast.makeText(
+                                    getApplicationContext(), "Bookmark supprimé!", Toast.LENGTH_SHORT
+                            ).show();
+
+                            //MAJ listview
+                            listAdapter.remove(pos);
+                            listAdapter.notifyDataSetChanged();
+
+                            break;
+
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            //No button clicked
+                            break;
+                    }
+                }
+            };
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long id) {
+                pos=position;
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(mainContext);
+                builder.setMessage("Supprimer le marque page pour la serie " + listDetail.get(position).getSerieName()).setPositiveButton("Oui", dialogClickListener)
+                        .setNegativeButton("Non", dialogClickListener).show();
+                return true;
+            }
+        });
 
         new Bookmarks().execute();
 
@@ -87,27 +154,6 @@ public class BookmarkActivity extends AppCompatActivity {
                 listAdapter = new BookmarkListAdapter(mainContext, listDetail);
                 listView.setAdapter(listAdapter);
 
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Object listItem = listDetail.get(position);
-/*
-                Toast.makeText(
-                        getApplicationContext(),
-                        listDetail.get(position)
-                                + listDetail.get(position).getSerieName()
-                                + " -> "
-                                + listDetail.get(position).getPageUrl(), Toast.LENGTH_SHORT
-                ).show();
-*/
-                        Intent intent_lecteur = new Intent(BookmarkActivity.this, LecteurActivity.class);
-                        intent_lecteur.putExtra("SERIE_TITLE", listDetail.get(position).getSerieName());
-                        intent_lecteur.putExtra("SERIE_URL", "");
-                        intent_lecteur.putExtra("CHAPITRE_TITLE", listDetail.get(position).getChapterName());
-                        intent_lecteur.putExtra("CHAPITRE_URL", listDetail.get(position).getPageUrl());
-                        startActivity(intent_lecteur);
-                    }
-                });
             }
             else{
                 Toast.makeText(
@@ -155,6 +201,8 @@ public class BookmarkActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
 
 }
 

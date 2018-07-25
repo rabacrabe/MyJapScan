@@ -5,6 +5,7 @@ package japscan.gtheurillat.adapter;
  */
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import japscan.gtheurillat.db.model.Bookmark;
@@ -21,18 +23,20 @@ import japscan.gtheurillat.japscan.R;
 // Custom list item class for menu items
 public class BookmarkListAdapter extends BaseAdapter {
 
-    private List<Bookmark> items;
+    private ArrayList<Bookmark> items;
     private Context context;
-    private int numItems = 0;
 
-    public BookmarkListAdapter(Context context, final List<Bookmark> items) {
-        this.items = items;
+    public BookmarkListAdapter(Context context, final ArrayList<Bookmark> items) {
+        this.items = new ArrayList<Bookmark>();
+        for (Bookmark item : items) {
+            this.items.add(item);
+        }
+
         this.context = context;
-        this.numItems = items.size();
     }
 
     public int getCount() {
-        return numItems;
+        return items.size();
     }
 
     public Bookmark getItem(int position) {
@@ -40,12 +44,13 @@ public class BookmarkListAdapter extends BaseAdapter {
     }
 
     public long getItemId(int position) {
-        return 0;
+        return getItem(position).getId();
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
 
         // Get the current list item
+        Log.e("DELETE BOOKMARK", "index " +position + " from " + items.size() + " elements");
         final Bookmark item = items.get(position);
         // Get the layout for the list item
         final LinearLayout itemLayout = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.list_bookmark_item, parent, false);
@@ -62,5 +67,10 @@ public class BookmarkListAdapter extends BaseAdapter {
 
         return itemLayout;
     }
+
+    public void remove(int item) {
+        items.remove(item);
+    }
+
 
 }

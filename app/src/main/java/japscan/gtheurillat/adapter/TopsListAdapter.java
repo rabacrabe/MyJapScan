@@ -26,16 +26,15 @@ public class TopsListAdapter extends BaseAdapter {
 
     private List<Serie> items;
     private Context context;
-    private int numItems = 0;
 
     public TopsListAdapter(Context context, final List<Serie> items) {
         this.items = items;
         this.context = context;
-        this.numItems = items.size();
+
     }
 
     public int getCount() {
-        return numItems;
+        return items.size();
     }
 
     public Serie getItem(int position) {
@@ -43,7 +42,7 @@ public class TopsListAdapter extends BaseAdapter {
     }
 
     public long getItemId(int position) {
-        return 0;
+        return getItem(position).getIdxCurrentChapitre();
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {

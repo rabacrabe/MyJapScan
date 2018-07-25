@@ -53,7 +53,6 @@ public class CatalogueListAdapter extends ArrayAdapter<Serie> implements Section
     }
 
     public long getItemId(int position) {
-
         //return 0;
         return this.items.indexOf(getItem(position));
     }
