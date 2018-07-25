@@ -162,8 +162,14 @@ public class JapScanProxy {
             serie.setAuteur(lst_table_rows.get(0).text());
             serie.setDate_sortie(lst_table_rows.get(1).text());
             serie.setGenre(lst_table_rows.get(2).text());
-            serie.setFansub(lst_table_rows.get(3).text());
-            serie.setStatus(lst_table_rows.get(4).text());
+
+            if (lst_table_rows.size() > 4) {
+                serie.setFansub(lst_table_rows.get(3).text());
+                serie.setStatus(lst_table_rows.get(4).text());
+            } else {
+                serie.setFansub("");
+                serie.setStatus(lst_table_rows.get(3).text());
+            }
 
             Element synopsis_node = doc.select("#synopsis").first();
             serie.setSynopsis(synopsis_node.text());

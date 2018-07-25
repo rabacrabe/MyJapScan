@@ -48,23 +48,28 @@ public class TopsActivity extends AppCompatActivity {
         mainContext = this;
 
         new Tops().execute();
-
+/*
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Object listItem = listDetail.get(position);
-                /*
-                Toast.makeText(
-                        getApplicationContext(),
-                        listDetail.get(position)
-                                + " -> "
-                                + listDetail.get(position).getUrl(), Toast.LENGTH_SHORT
-                ).show();
-                */
+
                 Intent intent_seriedetail = new Intent(TopsActivity.this, SerieDetailsActivity.class);
                 intent_seriedetail.putExtra("SERIE_TITLE", listDetail.get(position).getTitle());
                 intent_seriedetail.putExtra("SERIE_URL", listDetail.get(position).getUrl());
                 startActivity(intent_seriedetail);
+
+
+            }
+        });
+*/
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent_seriedetail = new Intent(TopsActivity.this, SerieDetailsActivity.class);
+                intent_seriedetail.putExtra("SERIE_TITLE", listDetail.get(position).getTitle());
+                intent_seriedetail.putExtra("SERIE_URL", listDetail.get(position).getUrl());
+                startActivity(intent_seriedetail);
+
             }
         });
 

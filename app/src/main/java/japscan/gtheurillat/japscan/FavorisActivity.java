@@ -90,14 +90,7 @@ public class FavorisActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         Object listItem = listDetail.get(position);
-                /*
-                Toast.makeText(
-                        getApplicationContext(),
-                        listDetail.get(position)
-                                + " -> "
-                                + listDetail.get(position).getUrl(), Toast.LENGTH_SHORT
-                ).show();
-                */
+
                         Intent intent_seriedetail = new Intent(FavorisActivity.this, SerieDetailsActivity.class);
                         intent_seriedetail.putExtra("SERIE_TITLE", listDetail.get(position).getName());
                         intent_seriedetail.putExtra("SERIE_URL", listDetail.get(position).getUrl());

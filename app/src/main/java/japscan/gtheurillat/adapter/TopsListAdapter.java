@@ -42,7 +42,7 @@ public class TopsListAdapter extends BaseAdapter {
     }
 
     public long getItemId(int position) {
-        return getItem(position).getIdxCurrentChapitre();
+        return this.items.indexOf(getItem(position));
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
