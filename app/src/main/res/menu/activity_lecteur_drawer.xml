@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
@@ -23,16 +24,13 @@
             android:title="Chapitre Precedent" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Mode de lecture">
         <menu>
+
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:id="@+id/nav_dp_switch"
+                android:icon="@drawable/ic_border_outer_black_24dp"
+                android:title="Simples Pages" />
         </menu>
     </item>
 

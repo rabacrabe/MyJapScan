@@ -199,7 +199,7 @@ public class JapScanProxy {
 
                         Log.e("CHAPITRE", chapitreNode.text());
 
-                        Chapitre newChapitre = new Chapitre(chapitreNode.text(), "https:"+chapitreNode.attr("href").toString());
+                        Chapitre newChapitre = new Chapitre(chapitreNode.text(), this.urlRoot+chapitreNode.attr("href").toString());
 
                         if (newTome == null) {
                             newTome = new Tome("PLUS RECENT");

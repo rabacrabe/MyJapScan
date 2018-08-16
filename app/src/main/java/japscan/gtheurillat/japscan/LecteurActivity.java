@@ -5,12 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,13 +26,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+import com.squareup.picasso.Transformation;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -41,6 +48,7 @@ import japscan.gtheurillat.model.Chapitre;
 import japscan.gtheurillat.model.Page;
 import japscan.gtheurillat.model.Serie;
 import japscan.gtheurillat.util.JapScanProxy;
+import japscan.gtheurillat.util.picasso.CropTransformation;
 
 import static java.lang.Thread.sleep;
 
@@ -66,9 +74,13 @@ public class LecteurActivity extends AppCompatActivity
     BookmarkDAO bmDAO;
     Bookmark bookmark;
     Integer idx_selected;
-
+    int disply_width;
+    String pagePosition = "all";
+    boolean isDoublesPages = false;
     View headerView;
     int check = 0;
+    Switch swDoublePage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,6 +162,8 @@ public class LecteurActivity extends AppCompatActivity
 
                     goToPage(selectedPage.getUrl(), String.valueOf(position+1));
                 }
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
             }
 
             @Override
@@ -158,6 +172,8 @@ public class LecteurActivity extends AppCompatActivity
             }
 
         });
+
+
 
         //serieTitle = getIntent().getStringExtra("SERIE_TITLE");
         //serieUrl = getIntent().getStringExtra("SERIE_URL");
@@ -169,6 +185,11 @@ public class LecteurActivity extends AppCompatActivity
         lecteurTitreChapitre.setText(chapitreTitle);
 
         picasso = Picasso.with(mainContext);
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        disply_width = size.x;
 
         new Lecteur().execute();
 
@@ -245,9 +266,34 @@ public class LecteurActivity extends AppCompatActivity
         } else if (id == R.id.lecteur_nav_chapitre_precedent) {
             this.goToPreviousChapter();
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_dp_switch) {
 
-        } else if (id == R.id.nav_send) {
+            isDoublesPages = !item.isChecked();
+            item.setChecked(isDoublesPages);
+
+            if (isDoublesPages == true) {
+                item.setTitle("Doubles Pages");
+                item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_border_vertical_black_24dp));
+                pagePosition = "left";
+                Toast.makeText(
+                        getApplicationContext(),
+                        "Mode doubles pages activés", Toast.LENGTH_SHORT
+                ).show();
+                this.reloadPage();
+                //@drawable/ic_border_vertical_black_24dp
+            }
+            else {
+                item.setTitle("Simples Pages");
+                item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_border_outer_black_24dp));
+                pagePosition = "all";
+                Toast.makeText(
+                        getApplicationContext(),
+                        "Mode simples pages activés", Toast.LENGTH_SHORT
+                ).show();
+                this.reloadPage();
+            }
+
+
 
         }
 
@@ -256,11 +302,29 @@ public class LecteurActivity extends AppCompatActivity
         return true;
     }
 
+    public void reloadPage() {
+        Toast.makeText(
+                getApplicationContext(),
+                "Reload page", Toast.LENGTH_SHORT
+        ).show();
+
+
+        Page currentPage = currentChapitre.getLstPage().get(currentImageindex);
+        picasso.invalidate(currentPage.getImgUrl());
+        picasso.load(currentPage.getImgUrl())
+                .transform(new ResizeTransformation(disply_width, pagePosition))
+                .into(img);
+    }
+
     public void goToPage(String pageUrl, String pageNumber) {
         Toast.makeText(
                 getApplicationContext(),
                 "Go page -> " + pageNumber, Toast.LENGTH_SHORT
         ).show();
+
+        if (isDoublesPages == true) {
+            pagePosition = "left";
+        }
 
         chapitreUrl = pageUrl;
         new Lecteur().execute();
@@ -268,36 +332,54 @@ public class LecteurActivity extends AppCompatActivity
     }
 
     public void goToNextPage() {
-        if (currentImageindex+1 == currentChapitre.getLstPage().size()) {
-            this.goToNextChapter();
+        if (isDoublesPages == true && pagePosition == "left") {
+            pagePosition = "right";
+            this.reloadPage();
         }
         else {
-            Page nexPage = currentChapitre.getLstPage().get(currentImageindex + 1);
+            if (isDoublesPages == true) {
+                pagePosition = "left";
+            }
 
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Next page", Toast.LENGTH_SHORT
-            ).show();
+            if (currentImageindex + 1 == currentChapitre.getLstPage().size()) {
+                this.goToNextChapter();
+            } else {
+                Page nexPage = currentChapitre.getLstPage().get(currentImageindex + 1);
 
-            chapitreUrl = nexPage.getUrl();
-            new Lecteur().execute();
+                Toast.makeText(
+                        getApplicationContext(),
+                        "Next page", Toast.LENGTH_SHORT
+                ).show();
+
+                chapitreUrl = nexPage.getUrl();
+                new Lecteur().execute();
+            }
         }
     }
 
     public void goToPreviousPage() {
-        if (currentImageindex == 0) {
-            this.goToPreviousChapter();
+        if (isDoublesPages && pagePosition == "right") {
+            pagePosition = "left";
+            this.reloadPage();
         }
         else {
-            Page precPage = currentChapitre.getLstPage().get(currentImageindex - 1);
+            if (isDoublesPages == true) {
+                pagePosition = "left";
+            }
 
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Precedent page", Toast.LENGTH_SHORT
-            ).show();
+            if (currentImageindex == 0) {
+                this.goToPreviousChapter();
+            } else {
+                Page precPage = currentChapitre.getLstPage().get(currentImageindex - 1);
 
-            chapitreUrl = precPage.getUrl();
-            new Lecteur().execute();
+                Toast.makeText(
+                        getApplicationContext(),
+                        "Precedent page", Toast.LENGTH_SHORT
+                ).show();
+
+                chapitreUrl = precPage.getUrl();
+                new Lecteur().execute();
+            }
         }
     }
 
@@ -314,6 +396,10 @@ public class LecteurActivity extends AppCompatActivity
         chapitreTitle  = nextChapitre.getTitle();
         titrePage.setText(chapitreTitle);
         chapitreUrl  = nextChapitre.getUrl();
+
+        if (isDoublesPages == true) {
+            pagePosition = "left";
+        }
 
         chapitreUrl=nextChapitre.getUrl();
         new Lecteur().execute();
@@ -339,6 +425,10 @@ public class LecteurActivity extends AppCompatActivity
             chapitreTitle  = precChapitre.getTitle();
             titrePage.setText(chapitreTitle);
             chapitreUrl  = precChapitre.getUrl();
+
+            if (isDoublesPages == true) {
+                pagePosition = "left";
+            }
 
             chapitreUrl = precChapitre.getUrl();
             new Lecteur().execute();
@@ -399,8 +489,13 @@ public class LecteurActivity extends AppCompatActivity
                     if (page.isSelected() == true) {
 
                         Log.e("LOAD IMG", page.getImgUrl());
+                        Log.e("POS IMG", pagePosition);
+
                         currentImageindex = idx;
-                        picasso.load(page.getImgUrl()).into(img);
+                        picasso.invalidate(page.getImgUrl());
+                        picasso.load(page.getImgUrl())
+                                .transform(new ResizeTransformation(disply_width, pagePosition))
+                                .into(img);
 
                         Integer nbpages = currentChapitre.getLstPage().size() - 1;
 
@@ -445,6 +540,7 @@ public class LecteurActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+
         return true;
     }
 
@@ -476,6 +572,53 @@ public class LecteurActivity extends AppCompatActivity
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public class ResizeTransformation implements Transformation {
+
+        //la largeur voulue
+        private int targetWidth;
+        private String targetPosition;
+
+        public ResizeTransformation(int width, String position) {
+            this.targetWidth = width;
+            this.targetPosition = position;
+        }
+
+        @Override
+        public Bitmap transform(Bitmap source) {
+            double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
+            int targetHeight = (int) (targetWidth * aspectRatio);
+            Bitmap resultScale = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
+
+            Bitmap result;
+
+            Log.e("Target position", targetPosition);
+
+
+
+            if (targetPosition == "left") {
+                result = Bitmap.createBitmap(resultScale, 0,0,targetWidth/2, targetHeight);
+            }
+            else if (targetPosition == "right") {
+                result = Bitmap.createBitmap(resultScale, targetWidth/2,0,targetWidth/2, targetHeight);
+            }
+            else {
+                result = resultScale;
+            }
+
+
+            if (result != source) {
+                // Same bitmap is returned if sizes are the same
+                source.recycle();
+            }
+            return result;
+        }
+
+        @Override
+        public String key() {
+            return "ResizeTransformation"+targetWidth;
         }
     }
 
