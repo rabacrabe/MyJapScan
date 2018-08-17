@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="japscan.gtheurillat.japscan.MainActivity">
-
+    tools:context="japscan.gtheurillat.japscan.NewsActivity">
 
     <TextView
         android:id="@+id/textToday"
@@ -19,18 +18,29 @@
         tools:layout_editor_absoluteX="41dp"
         tools:layout_editor_absoluteY="0dp" />
 
-    <ListView
-        android:id="@+id/lst_tops_semaine"
+    <FrameLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="0.5dp"
-        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft" >
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ListView
+            android:id="@+id/lst_tops_semaine"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@android:color/darker_gray"
+            android:dividerHeight="0.5dp"
+            android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft" />
+
+    </FrameLayout>
 
 
-
-    </ListView>
-
-
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="?android:attr/windowBackground"
+        app:menu="@menu/navigation"/>
 
 </LinearLayout>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_news"
+        android:icon="@drawable/ic_notifications_active_black_24dp"
+        android:title="Nouveautés" />
+
+    <item
+        android:id="@+id/navigation_tops"
+        android:icon="@drawable/ic_format_list_numbered_black_24dp"
+        android:title="Top10" />
+
+    <item
+        android:id="@+id/navigation_mangas"
+        android:icon="@drawable/ic_list_black_24dp"
+        android:title="Catalogue" />
+
+    <item
+        android:id="@+id/navigation_favoris"
+        android:icon="@drawable/ic_favorite_white_24dp"
+        android:title="Favoris" />
+
+    <item
+        android:id="@+id/navigation_bookmark"
+        android:icon="@drawable/ic_import_contacts_white_24dp"
+        android:title="Favoris" />
+
+
+</menu>

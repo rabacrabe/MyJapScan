@@ -8,28 +8,30 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ListAdapter;
-import android.widget.ListView;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.SearchView;
-import android.widget.Toast;
+import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import japscan.gtheurillat.adapter.CatalogueListAdapter;
+import japscan.gtheurillat.adapter.NouveautesExpandableListAdapter;
+import japscan.gtheurillat.model.Chapitre;
+import japscan.gtheurillat.model.Nouveaute;
 import japscan.gtheurillat.model.Serie;
 import japscan.gtheurillat.util.JapScanProxy;
 import japscan.gtheurillat.widget.IndexableListView;
-
 
 public class MangasActivity extends AppCompatActivity {
 
@@ -43,12 +45,71 @@ public class MangasActivity extends AppCompatActivity {
     SearchView searchView;
     AlertDialog.Builder alertDialogBuilder;
 
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_news:
+                    //mTextMessage.setText(R.string.title_home);
+                    Intent intent_mangas = new Intent(MangasActivity.this, NewsActivity.class);
+                    startActivity(intent_mangas);
+                    return true;
+                case R.id.navigation_tops:
+                    //mTextMessage.setText(R.string.title_dashboard);
+                    Intent intent_tops = new Intent(MangasActivity.this, TopsActivity.class);
+                    startActivity(intent_tops);
+                    return true;
+                case R.id.navigation_mangas:
+                    //mTextMessage.setText(R.string.title_notifications);
+
+                    return true;
+                case R.id.navigation_favoris:
+                    Intent intent_favoris = new Intent(MangasActivity.this, FavorisActivity.class);
+                    startActivity(intent_favoris);
+                    return true;
+                case R.id.navigation_bookmark:
+                    Intent intent_bookmark = new Intent(MangasActivity.this, BookmarkActivity.class);
+                    startActivity(intent_bookmark);
+                    return true;
+            }
+            return false;
+        }
+    };
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //getMenuInflater().inflate(R.menu.navigation_top, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.menu_favoris:
+                Intent intent_favoris = new Intent(MangasActivity.this, FavorisActivity.class);
+                startActivity(intent_favoris);
+                return true;
+            case R.id.menu_bookmark:
+                Intent intent_bookmark = new Intent(MangasActivity.this, BookmarkActivity.class);
+                startActivity(intent_bookmark);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mangas);
 
-        //setTitle("Nouveautés");
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navigation.setSelectedItemId(R.id.navigation_mangas);
 
 
         mainContext = this;
@@ -110,8 +171,8 @@ public class MangasActivity extends AppCompatActivity {
                 return false;
             }
         });
-
     }
+
 
     // Title AsyncTask
     private class Catalogue extends AsyncTask<Void, Void, Void> {
@@ -170,43 +231,4 @@ public class MangasActivity extends AppCompatActivity {
     }
 
 
-
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_home:
-                Intent intent_main = new Intent(MangasActivity.this, MainActivity.class);
-                startActivity(intent_main);
-                return true;
-            case R.id.menu_tops:
-                Intent intent_top = new Intent(MangasActivity.this, TopsActivity.class);
-                startActivity(intent_top);
-                return true;
-            case R.id.menu_list_mangas:
-                return true;
-            case R.id.menu_favoris:
-                Intent intent_favoris = new Intent(MangasActivity.this, FavorisActivity.class);
-                startActivity(intent_favoris);
-                return true;
-            case R.id.menu_bookmark:
-                Intent intent_bookmark = new Intent(MangasActivity.this, BookmarkActivity.class);
-                startActivity(intent_bookmark);
-                return true;
-            case R.id.menu_settings:
-                // Comportement du bouton "Paramètres"
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
 }
-

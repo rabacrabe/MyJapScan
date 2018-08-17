@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,7 +16,7 @@ import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +29,6 @@ import japscan.gtheurillat.model.Nouveaute;
 import japscan.gtheurillat.model.Serie;
 import japscan.gtheurillat.util.JapScanProxy;
 
-
 public class TopsActivity extends AppCompatActivity {
 
     ListView listView;
@@ -37,12 +38,70 @@ public class TopsActivity extends AppCompatActivity {
     ProgressDialog mProgressDialog;
     Context mainContext;
 
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_news:
+                    //mTextMessage.setText(R.string.title_home);
+                    Intent intent_tops = new Intent(TopsActivity.this, NewsActivity.class);
+                    startActivity(intent_tops);
+                    return true;
+                case R.id.navigation_tops:
+                    //mTextMessage.setText(R.string.title_dashboard);
+                    return true;
+                case R.id.navigation_mangas:
+                    //mTextMessage.setText(R.string.title_notifications);
+                    Intent intent_mangas = new Intent(TopsActivity.this, MangasActivity.class);
+                    startActivity(intent_mangas);
+                    return true;
+                case R.id.navigation_favoris:
+                    Intent intent_favoris = new Intent(TopsActivity.this, FavorisActivity.class);
+                    startActivity(intent_favoris);
+                    return true;
+                case R.id.navigation_bookmark:
+                    Intent intent_bookmark = new Intent(TopsActivity.this, BookmarkActivity.class);
+                    startActivity(intent_bookmark);
+                    return true;
+            }
+            return false;
+        }
+    };
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //getMenuInflater().inflate(R.menu.navigation_top, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.menu_favoris:
+                Intent intent_favoris = new Intent(TopsActivity.this, FavorisActivity.class);
+                startActivity(intent_favoris);
+                return true;
+            case R.id.menu_bookmark:
+                Intent intent_bookmark = new Intent(TopsActivity.this, BookmarkActivity.class);
+                startActivity(intent_bookmark);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tops);
 
-        //setTitle("Nouveautés");
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navigation.setSelectedItemId(R.id.navigation_tops);
 
         listView = (ListView) findViewById(R.id.lst_tops_semaine);
         mainContext = this;
@@ -74,6 +133,7 @@ public class TopsActivity extends AppCompatActivity {
         });
 
     }
+
 
     // Title AsyncTask
     private class Tops extends AsyncTask<Void, Void, Void> {
@@ -114,40 +174,5 @@ public class TopsActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_home:
-                Intent intent_main = new Intent(TopsActivity.this, MainActivity.class);
-                startActivity(intent_main);
-                return true;
-            case R.id.menu_tops:
-                return true;
-            case R.id.menu_list_mangas:
-                Intent intent_mangas = new Intent(TopsActivity.this, MangasActivity.class);
-                startActivity(intent_mangas);
-                return true;
-            case R.id.menu_favoris:
-                Intent intent_favoris = new Intent(TopsActivity.this, FavorisActivity.class);
-                startActivity(intent_favoris);
-                return true;
-            case R.id.menu_bookmark:
-                Intent intent_bookmark = new Intent(TopsActivity.this, BookmarkActivity.class);
-                startActivity(intent_bookmark);
-                return true;
-            case R.id.menu_settings:
-                // Comportement du bouton "Paramètres"
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
 }
-
