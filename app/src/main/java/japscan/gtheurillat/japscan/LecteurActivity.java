@@ -560,7 +560,7 @@ public class LecteurActivity extends AppCompatActivity
                                 .transform(new ResizeTransformation(disply_width, pagePosition))
                                 .into(img);
 
-                        Integer nbpages = currentChapitre.getLstPage().size() - 1;
+                        Integer nbpages = currentChapitre.getLstPage().size();
 
                         Toast.makeText(
                                 getApplicationContext(),
@@ -584,7 +584,7 @@ public class LecteurActivity extends AppCompatActivity
                 navigationPagination.setAdapter(paginationAdapter);
                 navigationPagination.setSelection(idx_selected);
 
-                navigationPaginationSuffix.setText(" / " + String.valueOf(currentChapitre.getLstPage().size()-1));
+                navigationPaginationSuffix.setText(" / " + String.valueOf(currentChapitre.getLstPage().size()));
 
             }else
             {
