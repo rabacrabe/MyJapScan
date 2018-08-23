@@ -31,6 +31,13 @@
                 android:id="@+id/nav_dp_switch"
                 android:icon="@drawable/ic_border_outer_black_24dp"
                 android:title="Simples Pages" />
+
+            <item
+                android:id="@+id/nav_dp_sens"
+                android:icon="@drawable/ic_redo_black_24dp"
+                android:title="De gauche à droite (->)"
+                android:enabled="false" />
+
         </menu>
     </item>
 

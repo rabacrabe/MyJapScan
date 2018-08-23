@@ -80,6 +80,8 @@ public class LecteurActivity extends AppCompatActivity
     View headerView;
     int check = 0;
     Switch swDoublePage;
+    boolean isDroiteAGauche = false;
+    int onDoublesPageNb = 0;
 
 
     @Override
@@ -219,6 +221,7 @@ public class LecteurActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+
     }
 
 
@@ -272,6 +275,10 @@ public class LecteurActivity extends AppCompatActivity
             isDoublesPages = !item.isChecked();
             item.setChecked(isDoublesPages);
 
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            Menu menuNav=navigationView.getMenu();
+            MenuItem page_sens = menuNav.findItem(R.id.nav_dp_sens);
+
             if (isDoublesPages == true) {
                 item.setTitle("Doubles Pages");
                 item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_border_vertical_black_24dp));
@@ -280,6 +287,9 @@ public class LecteurActivity extends AppCompatActivity
                         getApplicationContext(),
                         "Mode doubles pages activés", Toast.LENGTH_SHORT
                 ).show();
+                onDoublesPageNb = 1;
+
+                page_sens.setEnabled(true);
                 this.reloadPage();
                 //@drawable/ic_border_vertical_black_24dp
             }
@@ -291,10 +301,39 @@ public class LecteurActivity extends AppCompatActivity
                         getApplicationContext(),
                         "Mode simples pages activés", Toast.LENGTH_SHORT
                 ).show();
+
+                onDoublesPageNb = 0;
+
+                page_sens.setEnabled(false);
                 this.reloadPage();
             }
 
+        }else if (id == R.id.nav_dp_sens) {
+            isDroiteAGauche = !item.isChecked();
+            item.setChecked(isDroiteAGauche);
 
+            if (isDroiteAGauche == true) {
+                item.setTitle("De droite à gauche (<-)");
+                item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_undo_black_24dp));
+                pagePosition = "right";
+                Toast.makeText(
+                        getApplicationContext(),
+                        "Lecture de droite à gauche activés", Toast.LENGTH_SHORT
+                ).show();
+
+                this.reloadPage();
+                //@drawable/ic_border_vertical_black_24dp
+            }
+            else {
+                item.setTitle("De gauche à droite (->)");
+                item.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_redo_black_24dp));
+                pagePosition = "left";
+                Toast.makeText(
+                        getApplicationContext(),
+                        "Lecture de gauche à droite activés", Toast.LENGTH_SHORT
+                ).show();
+                this.reloadPage();
+            }
 
         }
 
@@ -324,7 +363,11 @@ public class LecteurActivity extends AppCompatActivity
         ).show();
 
         if (isDoublesPages == true) {
-            pagePosition = "left";
+            if (isDroiteAGauche == true) {
+                pagePosition = "right";
+            }else {
+                pagePosition = "left";
+            }
         }
 
         chapitreUrl = pageUrl;
@@ -333,13 +376,19 @@ public class LecteurActivity extends AppCompatActivity
     }
 
     public void goToNextPage() {
-        if (isDoublesPages == true && pagePosition == "left") {
-            pagePosition = "right";
+        if (isDoublesPages == true && onDoublesPageNb == 1) {
+            if (pagePosition == "left") {pagePosition = "right";}
+            else if (pagePosition == "right") {pagePosition = "left";}
+
+            onDoublesPageNb = 2;
+
             this.reloadPage();
         }
         else {
             if (isDoublesPages == true) {
-                pagePosition = "left";
+                if (pagePosition == "left") {pagePosition = "right";}
+                else if (pagePosition == "right") {pagePosition = "left";}
+                onDoublesPageNb = 1;
             }
 
             if (currentImageindex + 1 == currentChapitre.getLstPage().size()) {
@@ -359,13 +408,20 @@ public class LecteurActivity extends AppCompatActivity
     }
 
     public void goToPreviousPage() {
-        if (isDoublesPages && pagePosition == "right") {
-            pagePosition = "left";
+        if (isDoublesPages && onDoublesPageNb == 2) {
+            if (pagePosition == "left") {pagePosition = "right";}
+            else if (pagePosition == "right") {pagePosition = "left";}
+
+            onDoublesPageNb = 1;
+
             this.reloadPage();
         }
         else {
             if (isDoublesPages == true) {
-                pagePosition = "left";
+                if (isDroiteAGauche == true) {pagePosition = "right";}
+                else {pagePosition = "left";}
+
+                onDoublesPageNb = 2;
             }
 
             if (currentImageindex == 0) {
@@ -399,7 +455,10 @@ public class LecteurActivity extends AppCompatActivity
         chapitreUrl  = nextChapitre.getUrl();
 
         if (isDoublesPages == true) {
-            pagePosition = "left";
+            if (isDroiteAGauche == true) {pagePosition = "right";}
+            else {pagePosition = "left";}
+
+            onDoublesPageNb = 1;
         }
 
         chapitreUrl=nextChapitre.getUrl();
@@ -428,7 +487,10 @@ public class LecteurActivity extends AppCompatActivity
             chapitreUrl  = precChapitre.getUrl();
 
             if (isDoublesPages == true) {
-                pagePosition = "left";
+                if (isDroiteAGauche == true) {pagePosition = "right";}
+                else {pagePosition = "left";}
+
+                onDoublesPageNb = 1;
             }
 
             chapitreUrl = precChapitre.getUrl();
