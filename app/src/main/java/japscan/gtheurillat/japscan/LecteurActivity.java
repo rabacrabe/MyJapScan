@@ -101,6 +101,7 @@ public class LecteurActivity extends AppCompatActivity
         titrePage = (TextView) findViewById(R.id.lecteur_titre);
         lecteurTitreChapitre = (TextView) headerView.findViewById(R.id.lecteur_menu_titre_chapitre);
         lecteurTitreSerie = (TextView) headerView.findViewById(R.id.lecteur_menu_titre_serie);
+
         lecteurTitreSerie.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
@@ -177,8 +178,8 @@ public class LecteurActivity extends AppCompatActivity
 
         //serieTitle = getIntent().getStringExtra("SERIE_TITLE");
         //serieUrl = getIntent().getStringExtra("SERIE_URL");
-        chapitreTitle = getIntent().getStringExtra("CHAPITRE_TITLE");
-        chapitreUrl = getIntent().getStringExtra("CHAPITRE_URL");
+        chapitreTitle = (String)getIntent().getSerializableExtra("CHAPITRE_TITLE");
+        chapitreUrl = (String)getIntent().getSerializableExtra("CHAPITRE_URL");
 
 
         titrePage.setText(chapitreTitle);

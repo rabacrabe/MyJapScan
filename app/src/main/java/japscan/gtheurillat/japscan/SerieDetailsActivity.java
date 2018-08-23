@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
@@ -23,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import japscan.gtheurillat.adapter.SerieDetailsExpandableListAdapter;
+import japscan.gtheurillat.adapter.SerieDetailsTabAdapter;
 import japscan.gtheurillat.db.dao.FavorisDAO;
 import japscan.gtheurillat.db.model.Favoris;
 import japscan.gtheurillat.model.Chapitre;
@@ -46,6 +49,9 @@ public class SerieDetailsActivity extends AppCompatActivity {
     ImageView imgFavoris;
     FavorisDAO favDAO;
     Favoris favoris;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    SerieDetailsTabAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,107 +71,20 @@ public class SerieDetailsActivity extends AppCompatActivity {
 
 
 
-        TextView titleTextView = (TextView)findViewById(R.id.textMainTitle);
-        titleTextView.setText(title);
-
-        expandableListView = (ExpandableListView) findViewById(R.id.lst_dernieres_sorties);
         new SerieDetails().execute();
 
 
-        imgFavoris = (ImageView) findViewById(R.id.imgFavoris);
-        imgFavoris.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-                if (serie.isFavoris() == true) {
-                    favDAO.supprimer(favoris);
-
-                    imgFavoris.setImageResource(android.R.drawable.btn_star_big_off);
-                    serie.setFavoris(false);
-                    Toast.makeText(getApplicationContext(),"Supprimé des series favorites", Toast.LENGTH_LONG).show();
-                }
-                else {
-                    favoris = new Favoris(title, url, serie.getGenre(), serie.getStatus());
-                    favDAO.ajouter(favoris);
-
-                    imgFavoris.setImageResource(android.R.drawable.btn_star_big_on);
-                    serie.setFavoris(true);
-
-                    Toast.makeText(getApplicationContext(),"Ajouté aux series favorites", Toast.LENGTH_LONG).show();
-
-                }
-            }
-        });
-
-
-        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-
-        @Override
-        public void onGroupExpand(int groupPosition) {
-            /*
-            Toast.makeText(getApplicationContext(),
-                    expandableListTitle.get(groupPosition) + " List Expanded.",
-                    Toast.LENGTH_SHORT).show();
-                    */
-        }
-        });
-
-        expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-
-        @Override
-        public void onGroupCollapse(int groupPosition) {
-            /*
-            Toast.makeText(getApplicationContext(),
-                    expandableListTitle.get(groupPosition) + " List Collapsed.",
-                    Toast.LENGTH_SHORT).show();
-                    */
-
-        }
-        });
-
-        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView parent, View v,
-                                        int groupPosition, int childPosition, long id) {
-                String chapitre_title = expandableListDetail.get(
-                                                    expandableListTitle.get(groupPosition)).get(
-                                                    childPosition).getTitle();
-                String chapitre_url = expandableListDetail.get(
-                                                    expandableListTitle.get(groupPosition)).get(
-                                                    childPosition).getUrl();
-
-                /*
-                Toast.makeText(
-                        getApplicationContext(),
-                        expandableListTitle.get(groupPosition)
-                                + " -> "
-                                + expandableListDetail.get(
-                                expandableListTitle.get(groupPosition)).get(
-                                childPosition).getUrl(), Toast.LENGTH_SHORT
-                ).show();
-*/
-                Intent intent_lecteur = new Intent(SerieDetailsActivity.this, LecteurActivity.class);
-                intent_lecteur.putExtra("SERIE_TITLE", title);
-                intent_lecteur.putExtra("SERIE_URL", url);
-                intent_lecteur.putExtra("CHAPITRE_TITLE", chapitre_title);
-                intent_lecteur.putExtra("CHAPITRE_URL", chapitre_url);
-                startActivity(intent_lecteur);
-
-                return true;
-            }
-        });
     }
 
     // Title AsyncTask
     private class SerieDetails extends AsyncTask<Void, Void, Void> {
-        String title;
+
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             mProgressDialog = new ProgressDialog(SerieDetailsActivity.this);
-            mProgressDialog.setTitle(this.title);
+            mProgressDialog.setTitle(title);
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.setIndeterminate(false);
             mProgressDialog.show();
@@ -176,15 +95,6 @@ public class SerieDetailsActivity extends AppCompatActivity {
             try {
                 JapScanProxy proxy = new JapScanProxy();
                 serie = proxy.getSerieDetails(title, url);
-
-
-                expandableListDetail = new HashMap<Tome, List<Chapitre>>();
-                expandableListTitle = new ArrayList<Tome>();
-                for (Tome tome : serie.getLstTomes()) {
-                    expandableListDetail.put(tome, tome.getLstChapitres());
-                    expandableListTitle.add(tome);
-                }
-
 
 
             } catch (Exception e) {
@@ -201,78 +111,35 @@ public class SerieDetailsActivity extends AppCompatActivity {
             //txttitle.setText(title);
 
             try {
-                TextView auteurTextView = (TextView) findViewById(R.id.textDetailAuteur);
-                auteurTextView.setText(serie.getAuteur());
+                //Initializing the tablayout
+                tabLayout = (TabLayout) findViewById(R.id.tabLayout_seriedetails);
 
-                TextView dateTextView = (TextView) findViewById(R.id.textDetailDate);
-                dateTextView.setText(serie.getDate_sortie());
+                //Adding the tabs using addTab() method
+                tabLayout.addTab(tabLayout.newTab().setText("Infos"));
+                tabLayout.addTab(tabLayout.newTab().setText("Chapitres"));
 
-                TextView genreTextView = (TextView) findViewById(R.id.textDetailGenre);
-                genreTextView.setText(serie.getGenre());
+                tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-                TextView fansubTextView = (TextView) findViewById(R.id.textDetailFansub);
-                fansubTextView.setText(serie.getFansub());
+                //Initializing viewPager
+                viewPager = (ViewPager) findViewById(R.id.pager);
 
-                TextView statusTextView = (TextView) findViewById(R.id.textDetailStatus);
-                statusTextView.setText(serie.getStatus());
+                //Creating our pager adapter
+                adapter = new SerieDetailsTabAdapter(getSupportFragmentManager(), tabLayout.getTabCount(), serie);
 
-                TextView synopsisTextView = (TextView) findViewById(R.id.textDetailSynopsis);
-                synopsisTextView.setText(serie.getSynopsis());
-                synopsisTextView.setMovementMethod(new ScrollingMovementMethod());
+                //Adding adapter to pager
+                viewPager.setAdapter(adapter);
 
-                favoris = favDAO.selectionner(url);
-                if (favoris != null) {
-                    imgFavoris.setImageResource(android.R.drawable.btn_star_big_on);
-                    serie.setFavoris(true);
-                }
-
-                //expandableListTitle = new ArrayList<Tome>(expandableListDetail.keySet());
-                expandableListAdapter = new SerieDetailsExpandableListAdapter(mainContext, expandableListTitle, expandableListDetail);
-                expandableListView.setAdapter(expandableListAdapter);
+                // Give the TabLayout the ViewPager
+                TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout_seriedetails);
+                tabLayout.setupWithViewPager(viewPager);
             } catch (Exception e) {
                 showError(e.toString());
             }
-                mProgressDialog.dismiss();
+            mProgressDialog.dismiss();
 
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_home:
-                Intent intent_main = new Intent(SerieDetailsActivity.this, MainActivity.class);
-                startActivity(intent_main);
-                return true;
-            case R.id.menu_tops:
-                Intent intent_tops = new Intent(SerieDetailsActivity.this, TopsActivity.class);
-                startActivity(intent_tops);
-                return true;
-            case R.id.menu_list_mangas:
-                Intent intent_mangas = new Intent(SerieDetailsActivity.this, MangasActivity.class);
-                startActivity(intent_mangas);
-                return true;
-            case R.id.menu_favoris:
-                Intent intent_favoris = new Intent(SerieDetailsActivity.this, FavorisActivity.class);
-                startActivity(intent_favoris);
-                return true;
-            case R.id.menu_bookmark:
-                Intent intent_bookmark = new Intent(SerieDetailsActivity.this, BookmarkActivity.class);
-                startActivity(intent_bookmark);
-                return true;
-            case R.id.menu_settings:
-                // Comportement du bouton "Paramètres"
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
     public void showError(String message) {
         AlertDialog.Builder alertDialogBuilder;

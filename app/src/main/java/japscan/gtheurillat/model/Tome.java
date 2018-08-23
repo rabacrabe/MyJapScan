@@ -1,12 +1,16 @@
 package japscan.gtheurillat.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by gtheurillat on 10/07/2018.
  */
 
-public class Tome {
+public class Tome{
 
     private String title;
     private ArrayList<Chapitre> lstChapitres;
@@ -14,7 +18,6 @@ public class Tome {
 
     public Tome(String title) {
         this.title = title;
-
         lstChapitres = new ArrayList<Chapitre>();
     }
 
@@ -47,4 +50,5 @@ public class Tome {
     }
 
 
+  
 }

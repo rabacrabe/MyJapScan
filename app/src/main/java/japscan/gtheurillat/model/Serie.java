@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by gtheurillat on 10/07/2018.
  */
 
-public class Serie {
+public class Serie{
 
     private String title;
     private ArrayList<Chapitre> lstChapitres;

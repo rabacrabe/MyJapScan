@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="japscan.gtheurillat.japscan.NewsActivity">
+    tools:context="japscan.gtheurillat.japscan.MangasActivity">
 
     <TextView
         android:id="@+id/textMainTitle"

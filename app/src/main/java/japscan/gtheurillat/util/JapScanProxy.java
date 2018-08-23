@@ -151,6 +151,7 @@ public class JapScanProxy {
             String userAgent = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.87 Safari/537.36";
 
 
+            //Log.e("TITLE", serieTitle);
             Log.e("URL", serieUrl);
             Document doc = Jsoup.connect(serieUrl).userAgent(userAgent).get();
             Log.e("GET", "JSOUP \n"+ doc.text());
