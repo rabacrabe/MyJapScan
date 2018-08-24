@@ -60,6 +60,7 @@ public class LecteurActivity extends AppCompatActivity
     String chapitreTitle;
     String chapitreUrl;
     Serie serie;
+    Serie background_serie;
     TextView titrePage;
     ImageView img;
     Picasso picasso;
@@ -82,6 +83,7 @@ public class LecteurActivity extends AppCompatActivity
     Switch swDoublePage;
     boolean isDroiteAGauche = false;
     int onDoublesPageNb = 0;
+    Boolean loadInBackground= false;
 
 
     @Override
@@ -402,7 +404,10 @@ public class LecteurActivity extends AppCompatActivity
                 ).show();
 
                 chapitreUrl = nexPage.getUrl();
-                new Lecteur().execute();
+                //new Lecteur().execute();
+                Lecteur lecteur = new Lecteur();
+                lecteur.gotToNextPage = true;
+                lecteur.execute();
             }
         }
     }
@@ -461,7 +466,6 @@ public class LecteurActivity extends AppCompatActivity
             onDoublesPageNb = 1;
         }
 
-        chapitreUrl=nextChapitre.getUrl();
         new Lecteur().execute();
     }
 
@@ -501,6 +505,7 @@ public class LecteurActivity extends AppCompatActivity
     // Title AsyncTask
     public class Lecteur extends AsyncTask<Void, Void, Void> {
         String title;
+        boolean gotToNextPage = false;
 
         @Override
         protected void onPreExecute() {
@@ -518,7 +523,17 @@ public class LecteurActivity extends AppCompatActivity
             try {
                 JapScanProxy proxy = new JapScanProxy();
                 Log.e("getLecteurInfos", "Recuperation des donnes du chapitre " + chapitreTitle + " URL: " + chapitreUrl);
-                serie = proxy.getLecteurInfos(chapitreTitle, chapitreUrl);
+
+                while (loadInBackground == true) {
+                    LecteurActivity.this.wait(1000);
+                }
+
+                if (background_serie != null && gotToNextPage == true) {
+                    serie = new Serie(background_serie);
+                }
+                else {
+                    serie = proxy.getLecteurInfos(chapitreTitle, chapitreUrl);
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -596,47 +611,52 @@ public class LecteurActivity extends AppCompatActivity
                 //picasso.load().into(img);
             }
 
+            Chapitre nextChapitre = serie.getLstChapitres().get(2);
+
+            if (!(currentImageindex + 1 == currentChapitre.getLstPage().size())) {
+                new LoadNewChapterInBackground().execute();
+            }
+
             mProgressDialog.dismiss();
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
 
-        return true;
-    }
+    // Title AsyncTask
+    public class LoadNewChapterInBackground extends AsyncTask<Void, Void, Void> {
+        String title;
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_home:
-                Intent intent_main = new Intent(LecteurActivity.this, MainActivity.class);
-                startActivity(intent_main);
-                return true;
-            case R.id.menu_tops:
-                Intent intent_tops = new Intent(LecteurActivity.this, TopsActivity.class);
-                startActivity(intent_tops);
-                return true;
-            case R.id.menu_list_mangas:
-                Intent intent_mangas = new Intent(LecteurActivity.this, MangasActivity.class);
-                startActivity(intent_mangas);
-                return true;
-            case R.id.menu_favoris:
-                Intent intent_favoris = new Intent(LecteurActivity.this, FavorisActivity.class);
-                startActivity(intent_favoris);
-                return true;
-            case R.id.menu_bookmark:
-                Intent intent_bookmark = new Intent(LecteurActivity.this, BookmarkActivity.class);
-                startActivity(intent_bookmark);
-                return true;
-            case R.id.menu_settings:
-                // Comportement du bouton "Paramètres"
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loadInBackground= false;
+            background_serie = null;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                JapScanProxy proxy = new JapScanProxy();
+
+
+                Page nexPage = currentChapitre.getLstPage().get(currentImageindex + 1);
+
+                Log.e("getLecteurInfos background", "Recuperation des donnes du chapitre " + nexPage.getTitle() + " URL: " + nexPage.getUrl());
+                background_serie = proxy.getLecteurInfos(nexPage.getTitle(), nexPage.getUrl());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            Log.e("getLecteurInfos background", "Fin");
+            loadInBackground = false;
         }
     }
+
 
     public class ResizeTransformation implements Transformation {
 

@@ -294,7 +294,7 @@ public class JapScanProxy {
             Element pages_node = doc.select("select#pages").first();
 
             for (Element pageItem : pages_node.children()) {
-                Log.e("PAGE", pageItem.text() + " -> " + this.urlRoot + pageItem.attr("value"));
+                //Log.e("PAGE", pageItem.text() + " -> " + this.urlRoot + pageItem.attr("value"));
                 Page newPage = new Page(pageItem.text(), this.urlRoot + pageItem.attr("value"));
 
 

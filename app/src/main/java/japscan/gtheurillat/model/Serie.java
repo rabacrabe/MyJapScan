@@ -23,6 +23,23 @@ public class Serie{
     private Integer idxCurrentChapitre;
     private Boolean favoris;
 
+    public Serie(Serie newSerie) {
+        title = newSerie.getTitle();
+        lstChapitres = newSerie.getLstChapitres();
+        lstTomes = newSerie.getLstTomes();
+        url = newSerie.getUrl();
+        hot = newSerie.isHot();
+        number = newSerie.getNumber();
+        auteur = newSerie.getAuteur();
+        date_sortie = newSerie.getDate_sortie();
+        genre = newSerie.getGenre();
+        fansub = newSerie.getFansub();
+        status = newSerie.getStatus();
+        synopsis = newSerie.getSynopsis();
+        idxCurrentChapitre = newSerie.getIdxCurrentChapitre();
+        favoris = newSerie.isFavoris();
+    }
+
     public Serie(String title, String url) {
         this.title = title;
         this.url = url;
