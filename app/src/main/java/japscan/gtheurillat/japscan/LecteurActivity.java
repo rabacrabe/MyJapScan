@@ -34,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Target;
 import com.squareup.picasso.Transformation;
 
@@ -49,6 +50,7 @@ import japscan.gtheurillat.model.Page;
 import japscan.gtheurillat.model.Serie;
 import japscan.gtheurillat.util.JapScanProxy;
 import japscan.gtheurillat.util.picasso.CropTransformation;
+import japscan.gtheurillat.util.picasso.ResizeTransformation;
 
 import static java.lang.Thread.sleep;
 
@@ -652,12 +654,29 @@ public class LecteurActivity extends AppCompatActivity
 
         @Override
         protected void onPostExecute(Void result) {
+
+            /*
+            for (Page page : currentChapitre.getLstPage()) {
+                if (page.isSelected() == true) {
+
+                    Log.e("LOAD IMG IN BACKGROUND", page.getImgUrl());
+
+                    picasso.invalidate(page.getImgUrl());
+                    picasso.load(page.getImgUrl())
+                            .transform(new ResizeTransformation(disply_width, pagePosition))
+                            .fetch(new Callback() {
+
+                            });
+                }
+            }
+*/
+
             Log.e("getLecteurInfos background", "Fin");
             loadInBackground = false;
         }
     }
 
-
+/*
     public class ResizeTransformation implements Transformation {
 
         //la largeur voulue
@@ -704,5 +723,5 @@ public class LecteurActivity extends AppCompatActivity
             return "ResizeTransformation"+targetWidth;
         }
     }
-
+*/
 }

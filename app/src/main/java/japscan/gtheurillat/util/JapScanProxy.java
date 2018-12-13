@@ -6,13 +6,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
+import io.github.kelvao.cloudflarescrape.CloudflareScrape;
 import japscan.gtheurillat.model.Chapitre;
 import japscan.gtheurillat.model.Nouveaute;
 import japscan.gtheurillat.model.Page;
 import japscan.gtheurillat.model.Serie;
 import japscan.gtheurillat.model.Tome;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -24,12 +27,23 @@ import org.jsoup.select.Elements;
 
 public class JapScanProxy {
 
-    private String urlRoot = "https://www.japscan.cc/";
-    private String urlCatalogue = "https://www.japscan.cc/mangas/";
+    private String urlRoot = "https://www.japscan.to/";
+    private String urlCatalogue = "https://www.japscan.to/mangas/";
+    private Map<String, String> cookies;
+
+
+    public void setCookies(Map<String, String> cookies) {
+        this.cookies = cookies;
+    }
 
 
     public JapScanProxy() {
 
+    }
+
+
+    public String getUrlRoot() {
+        return this.urlRoot;
     }
 
     public ArrayList<Nouveaute> getNouveautes(){
@@ -40,19 +54,67 @@ public class JapScanProxy {
             String userAgent = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.87 Safari/537.36";
 
 
-            Log.e("URL", this.urlRoot);
-            Document doc = Jsoup.connect(this.urlRoot).userAgent(userAgent).get();
-            Log.e("GET", "JSOUP \n"+ doc.text());
+            Log.i("URL", this.urlRoot);
+            //Document doc = Jsoup.connect(this.urlRoot).userAgent(userAgent).get();
 
-            Element nouveautes_node = doc.select("#dernieres_sorties").first();
+            Document doc = Jsoup.connect(this.urlRoot)
+                                .cookies(this.cookies)
+                                .userAgent(userAgent)
+                                .ignoreHttpErrors(true)
+                                .followRedirects(true)
+                                .timeout(100000)
+                                .ignoreContentType(true)
+                                .get();
+
+            Log.i("GET", "JSOUP \n"+ doc.text());
+
+            Element nouveautes_node = doc.select("#chapters").first();
+
 
             Nouveaute new_nouveaute = null;
             Serie newSerie = null;
 
-            Elements lst_nouveautes = nouveautes_node.children();
+            Elements lst_dates = nouveautes_node.children();
+            for (Element dateNode : lst_dates) {
+                Elements lst_nouveautes = dateNode.children();
 
-            for (Element elementNode : lst_nouveautes) {
+                //Log.e("CLASS", elementNode.attr("class"));
+                if (new_nouveaute != null) {
+                    lstNouveautes.add(new_nouveaute);
+                }
+                new_nouveaute = new Nouveaute(dateNode.attr("id"));
 
+                Log.e("DATE", dateNode.attr("id"));
+
+                for (Element elementNode : lst_nouveautes) {
+                    if (elementNode.tagName() == "div") {
+                        String className = elementNode.attr("class");
+                        if (className.equals("chapter_list")) {
+
+                            Elements chapters_nodes = elementNode.select("a");
+                            for (Element chapterNode : chapters_nodes) {
+                                Log.e("CHAPITRE", chapterNode.text());
+                                Chapitre newChapitre = new Chapitre(chapterNode.text(), this.urlRoot + chapterNode.attr("href"));
+                                newSerie.addChapitre(newChapitre);
+                            }
+                        }
+                    }
+                    else if (elementNode.tagName() == "h3") {
+                        Element serieNode = elementNode.select("a").first();
+
+
+
+                        Log.e("SERIE", serieNode.text());
+
+                        newSerie = new Serie(serieNode.text(), this.urlRoot + serieNode.attr("href").toString());
+
+                        new_nouveaute.addSerie(newSerie);
+                    }
+            }
+
+
+
+/*
                 if (elementNode.tagName() == "div") {
                     //Log.e("CLASS", elementNode.attr("class"));
                     String className = elementNode.attr("class");
@@ -91,7 +153,7 @@ public class JapScanProxy {
                     }
                 }
 
-
+*/
             }
             if (new_nouveaute != null) {
                 lstNouveautes.add(new_nouveaute);

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +22,8 @@ import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +36,7 @@ import japscan.gtheurillat.model.Chapitre;
 import japscan.gtheurillat.model.Serie;
 import japscan.gtheurillat.model.Tome;
 import japscan.gtheurillat.util.JapScanProxy;
+import japscan.gtheurillat.util.picasso.ResizeTransformation;
 
 
 public class SerieDetailsTabInfos extends Fragment {
@@ -45,9 +49,11 @@ public class SerieDetailsTabInfos extends Fragment {
     private String mSynopsis;
     private String mStatus;
     private String mUrl;
+    Picasso picasso;
 
 
     ImageView imgFavoris;
+    ImageView imgSerie;
     FavorisDAO favDAO;
     Favoris favoris;
     Boolean isFavoris;
@@ -81,6 +87,8 @@ public class SerieDetailsTabInfos extends Fragment {
         mSynopsis = getArguments().getString("SYNOPSIS");
         mUrl = getArguments().getString("URL");
 
+
+        picasso = Picasso.with(getActivity());
         favDAO = new FavorisDAO(getActivity());
 
     }
@@ -112,7 +120,14 @@ public class SerieDetailsTabInfos extends Fragment {
         synopsisTextView.setText(mSynopsis);
         synopsisTextView.setMovementMethod(new ScrollingMovementMethod());
 
+        imgSerie = (ImageView) view.findViewById(R.id.imgSerie);
+        String imgSerieUrl = "https://cdn.japscan.cc/img/mangas/" + mUrl.split("/")[5] + ".jpg";
 
+        Log.e("getSeriefos", "Recuperation de l'image " + imgSerieUrl);
+
+        picasso.load(imgSerieUrl)
+                //.transform(new ResizeTransformation(500,"all"))
+                .into(imgSerie);
 
 
         imgFavoris = (ImageView) view.findViewById(R.id.imgFavoris);

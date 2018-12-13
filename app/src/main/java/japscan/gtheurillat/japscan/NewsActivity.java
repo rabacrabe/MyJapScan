@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,15 +16,18 @@ import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
+import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import io.github.kelvao.cloudflarescrape.CloudflareScrape;
 import japscan.gtheurillat.adapter.NouveautesExpandableListAdapter;
 import japscan.gtheurillat.model.Chapitre;
 import japscan.gtheurillat.model.Nouveaute;
 import japscan.gtheurillat.model.Serie;
 import japscan.gtheurillat.util.JapScanProxy;
+import japscan.gtheurillat.util.cloudflare.CloudFlareProxy;
 
 public class NewsActivity extends AppCompatActivity {
 
@@ -33,6 +37,8 @@ public class NewsActivity extends AppCompatActivity {
     HashMap<Serie, List<Chapitre>> expandableListDetail;
     ProgressDialog mProgressDialog;
     Context mainContext;
+
+    private HashMap<String, String> cookies;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -165,16 +171,24 @@ public class NewsActivity extends AppCompatActivity {
                 return false;
             }
         });
+
     }
 
 
     // Title AsyncTask
-    private class Nouveautes extends AsyncTask<Void, Void, Void> {
+    public class Nouveautes extends AsyncTask<Void, Void, Void> {
         String title;
+        private HashMap<String, String> cookies;
+        private JapScanProxy proxy;
+
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
+            proxy = new JapScanProxy();
+
+
             mProgressDialog = new ProgressDialog(NewsActivity.this);
             mProgressDialog.setTitle("Dernières Sorties");
             mProgressDialog.setMessage("Loading...");
@@ -182,54 +196,83 @@ public class NewsActivity extends AppCompatActivity {
             mProgressDialog.show();
         }
 
+
+
+
+
+
         @Override
         protected Void doInBackground(Void... params) {
-            try {
 
 
 
-                JapScanProxy proxy = new JapScanProxy();
-                ArrayList<Nouveaute> lstNouveautes = proxy.getNouveautes();
+            CloudFlareProxy cf = new CloudFlareProxy(proxy.getUrlRoot());
+            cf.setUser_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:49.0) Gecko/20100101 Firefox/49.0");
+            cf.getCookies(new CloudFlareProxy.cfCallback() {
+                @Override
+                public void onSuccess(List<HttpCookie> cookieList) {
+                    Log.i("CLOUDFLARE", "SUCCES");
 
 
-                expandableListDetail = new HashMap<Serie, List<Chapitre>>();
-                expandableListTitle = new ArrayList<Serie>();
-                for (Nouveaute nouveaute : lstNouveautes) {
-                    //expandableListDetail.put(new Serie(nouveaute.getDate(), null), new ArrayList<Chapitre>());
 
-                    for (Serie serie : nouveaute.getLstSeries()) {
-                        List<Chapitre> lst_chapitres = new ArrayList<Chapitre>();
+                    proxy.setCookies(CloudFlareProxy.List2Map(cookieList));
 
-                        for (Chapitre chapitre : serie.getLstChapitres()) {
-                            chapitre.setDate_sortie(nouveaute.getDate());
-                            lst_chapitres.add(chapitre);
+                    try {
+                        //CloudFlareProxy cloudflareproxy = new CloudFlareProxy();
+                        //cloudflareproxy.getPage(proxy.getUrlRoot());
+                        Thread.currentThread();
+                        Thread.sleep(10000);
+
+                        ArrayList<Nouveaute> lstNouveautes = proxy.getNouveautes();
+
+
+                        expandableListDetail = new HashMap<Serie, List<Chapitre>>();
+                        expandableListTitle = new ArrayList<Serie>();
+                        for (Nouveaute nouveaute : lstNouveautes) {
+                            //expandableListDetail.put(new Serie(nouveaute.getDate(), null), new ArrayList<Chapitre>());
+
+                            for (Serie serie : nouveaute.getLstSeries()) {
+                                List<Chapitre> lst_chapitres = new ArrayList<Chapitre>();
+
+                                for (Chapitre chapitre : serie.getLstChapitres()) {
+                                    chapitre.setDate_sortie(nouveaute.getDate());
+                                    lst_chapitres.add(chapitre);
+                                }
+
+                                expandableListDetail.put(serie, lst_chapitres);
+                                expandableListTitle.add(serie);
+                            }
                         }
 
-                        expandableListDetail.put(serie, lst_chapitres);
-                        expandableListTitle.add(serie);
+                        expandableListAdapter = new NouveautesExpandableListAdapter(mainContext, expandableListTitle, expandableListDetail);
+                        expandableListView.setAdapter(expandableListAdapter);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
 
+                @Override
+                public void onFail() {
+                    Log.i("CLOUDFLARE", "FAIL");
+                }
+            });
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+
             return null;
         }
 
         @Override
         protected void onPostExecute(Void result) {
-            // Set title into TextView
-            //TextView txttitle = (TextView) findViewById(R.id.titletxt);
-            //txttitle.setText(title);
 
-            //expandableListTitle = new ArrayList<Serie>(expandableListDetail.keySet());
-
-            expandableListAdapter = new NouveautesExpandableListAdapter(mainContext, expandableListTitle, expandableListDetail);
-            expandableListView.setAdapter(expandableListAdapter);
+            //expandableListAdapter = new NouveautesExpandableListAdapter(mainContext, expandableListTitle, expandableListDetail);
+            //expandableListView.setAdapter(expandableListAdapter);
 
             mProgressDialog.dismiss();
         }
+
+
     }
 
 

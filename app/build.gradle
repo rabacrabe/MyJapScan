@@ -4,7 +4,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "japscan.gtheurillat.japscan"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -20,12 +20,16 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:27.0.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
-    implementation 'com.android.support:design:27.0.2'
+    implementation 'com.android.support:design:27.1.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'org.jsoup:jsoup:1.11.3'
     implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.github.Kelvao:CloudflareScrape:0.2.0'
+    implementation 'org.jodd:jodd-http:5.0.6'
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'io.apisense:rhino-android:1.0'
 }
